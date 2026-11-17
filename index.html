@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--
+  index.html = el ESQUELETO de tu página: el contenido y el orden de las secciones.
+    · Cómo se ve (colores, letras) → styles.css
+    · Tus casos → casos.js        · Ejemplos de cada ficha → ejemplos.js
+    · Estampitas y fotos → personal.js
+    · Piezas interactivas de la página → interactivos.js
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ximena Urquizo · Analista de datos, finanzas y control de gestión</title>
+  <meta name="description" content="Portafolio de Ximena Urquizo, ingeniera industrial y analista de datos. Excel, Power Query, Power BI, SQL, Python, n8n e integración de IA. Casos reales con datos ficticios.">
+  <!-- Así se ve tu link cuando lo pegas en LinkedIn o WhatsApp -->
+  <meta property="og:title" content="Ximena Urquizo · Analista de datos">
+  <meta property="og:description" content="Analizo los datos, estructuro la solución y la construyo con IA. Mira mis casos.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="lirio.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Barra fina arriba que avanza mientras bajas -->
+  <div id="progreso" class="progreso" aria-hidden="true"></div>
+
+  <!-- ===== MENÚ ===== -->
+  <header class="menu">
+    <a href="#inicio" class="menu__logo">Xime<span class="oro">.</span></a>
+    <nav class="menu__links">
+      <a href="#casos">Casos</a>
+      <a href="#herramientas" class="solo-desk">Herramientas</a>
+      <a href="#experiencia" class="solo-desk">Experiencia</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ===== 1. PORTADA: dos columnas ===== -->
+    <section id="inicio" class="portada">
+      <div id="estampitas" class="estampitas" aria-hidden="true"></div>
+
+      <!-- Columna izquierda: quién eres -->
+      <div class="portada__texto">
+        <p class="etiqueta"><span class="punto"></span>Ximena Urquizo · Analista de datos · Finanzas · Control de gestión</p>
+        <h1 class="portada__titulo">Soy <em>Ximena</em><span class="oro">.</span></h1>
+        <p class="portada__frase">Analizo los datos, estructuro la solución y la construyo con&nbsp;<em>IA</em>.</p>
+        <p class="portada__nota">Casos reales, con datos ficticios. Ingeniera industrial · Especialización en análisis de datos.</p>
+
+        <!-- JavaScript pone aquí los 2 casos destacados -->
+        <div id="destacados" class="destacados"></div>
+
+        <div class="portada__botones">
+          <a href="#contacto" class="boton boton--lleno">Conversemos ↗</a>
+          <a href="#casos" class="boton">Ver casos ↘</a>
+          <!-- Sube tu CV en PDF con este nombre exacto, junto a los demás archivos -->
+          <a href="CV-Ximena-Urquizo.pdf" class="boton" download>Descargar CV ↓</a>
+        </div>
+        <p class="portada__contacto">WhatsApp +51 940 138 547 · ximenaurquizopon2508@gmail.com</p>
+      </div>
+
+      <!-- Columna derecha: la hojita que se ordena sola (interactivos.js) -->
+      <div class="portada__objeto">
+        <div id="collage" class="collage" aria-hidden="true"></div>
+        <div id="hojita" class="hojita" aria-label="Animación: datos desordenados que se ordenan y terminan en una decisión"></div>
+        <a class="sonando" href="https://open.spotify.com/search/Vogue%20Madonna" target="_blank" rel="noopener">
+          <span class="sonando__barras" aria-hidden="true"><i></i><i></i><i></i></span>
+          De fondo · Vogue — Madonna ↗
+        </a>
+      </div>
+    </section>
+
+    <!-- Tira: mi forma de trabajar + números -->
+    <section class="metodo seccion--ancha" aria-label="Mi forma de trabajar">
+      <div class="metodo__pasos">
+        <div class="metodo__paso aparecer"><span class="metodo__num">01</span><div><b>Analizo</b><p>Los datos, para entender el problema de verdad.</p></div></div>
+        <div class="metodo__paso aparecer"><span class="metodo__num">02</span><div><b>Estructuro</b><p>La solución: qué medir, qué mejorar y quién la va a usar.</p></div></div>
+        <div class="metodo__paso aparecer"><span class="metodo__num">03</span><div><b>Construyo con IA</b><p>La herramienta, y valido que funcione y cuadre.</p></div></div>
+      </div>
+      <dl class="impacto">
+        <div><dt>10 días → al instante</dt><dd>utilidad e IGV por obra</dd></div>
+        <div><dt>106 agencias</dt><dd>en un dashboard de clima en Power BI</dd></div>
+        <div><dt>3 obras</dt><dd>con inventario y alertas diarias</dd></div>
+        <div><dt>10 casos</dt><dd>con ejemplos que puedes probar</dd></div>
+      </dl>
+    </section>
+
+    <!-- ===== 2. RED: casos y herramientas conectados ===== -->
+    <section id="red-seccion" class="seccion">
+      <div class="seccion__cabeza">
+        <div>
+          <p class="etiqueta">Mi trabajo, en una vista</p>
+          <h2 class="seccion__titulo">Nada vive <em>por separado</em>.</h2>
+        </div>
+        <p class="seccion__intro">Mis casos comparten herramientas y una forma de trabajar. Toca un punto para explorarlo.</p>
+      </div>
+      <div class="red">
+        <div class="red__caja">
+          <div class="red__filtros">
+            <button class="filtro activo" data-red="todo">Todo</button>
+            <button class="filtro" data-red="caso">Casos</button>
+            <button class="filtro" data-red="herramienta">Herramientas</button>
+            <span class="red__cuenta" id="red-cuenta"></span>
+          </div>
+          <svg id="red" class="red__lienzo" role="group" aria-label="Red de casos y herramientas"></svg>
+        </div>
+        <div id="red-panel" class="red__panel"></div>
+      </div>
+    </section>
+
+    <!-- ===== 3. CASOS ===== -->
+    <section id="casos" class="seccion">
+      <div class="seccion__cabeza">
+        <div>
+          <p class="etiqueta">Trabajo seleccionado</p>
+          <h2 class="seccion__titulo">¿Qué necesita <em>decidir</em> tu equipo?</h2>
+        </div>
+        <p class="seccion__intro">Cada caso empieza con una pregunta de negocio. Ábrela para ver qué hice y probar un ejemplo con datos ficticios.</p>
+      </div>
+      <div class="casos__barra">
+        <div id="filtros-casos" class="casos__filtros"></div>
+        <span id="contador-casos" class="etiqueta"></span>
+      </div>
+      <div id="lista-casos" class="grilla-casos"></div>
+    </section>
+
+    <!-- ===== 4. UNA DECISIÓN QUE PUEDES PROBAR ===== -->
+    <section id="decision" class="seccion">
+      <div class="decision">
+        <div class="decision__texto">
+          <p class="etiqueta">Una decisión que puedes probar</p>
+          <h2 class="seccion__titulo">¿Cuánto IGV pagas <em>de tu bolsillo</em>?</h2>
+          <p>Cada gasto sin factura es crédito fiscal que se pierde. Mueve cuánto del gasto de una obra tiene factura y mira cuánto IGV queda por pagar.</p>
+          <p class="decision__nota">Obra ficticia. La misma lógica de mi dashboard de obras.</p>
+        </div>
+        <div id="decision-igv" class="decision__caja"></div>
+      </div>
+    </section>
+
+    <!-- ===== 5. SECCIÓN OSCURA: DATAMATCH ===== -->
+    <section class="oscura">
+      <div class="oscura__dentro">
+        <div>
+          <p class="etiqueta">Herramientas hechas por mí</p>
+          <h2 class="seccion__titulo">También construyo <em>mis herramientas</em>.</h2>
+          <p class="oscura__intro">Cuando una tarea se repite, la convierto en una herramienta. Esta es mi app personal en Python.</p>
+        </div>
+        <div class="app">
+          <img src="datamatch.png" alt="Ícono de DataMatch: un conejito con flechas" class="app__icono">
+          <div>
+            <h3>DataMatch</h3>
+            <p class="app__sub">Cruza dos Excel sin fórmulas, aunque los nombres no estén escritos igual.</p>
+            <ul class="app__lista">
+              <li>Encuentra sola la fila de encabezados</li>
+              <li>Limpia nombres: tildes, comas, mayúsculas y orden</li>
+              <li>Amarillo si se parece · rojo si no lo encuentra</li>
+            </ul>
+            <button class="boton boton--claro" data-abrir-id="datamatch">Ver el caso y probarlo →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 6. HERRAMIENTAS ===== -->
+    <section id="herramientas" class="seccion">
+      <div class="seccion__cabeza">
+        <div>
+          <p class="etiqueta">Herramientas</p>
+          <h2 class="seccion__titulo">Con qué <em>trabajo</em>.</h2>
+        </div>
+        <p class="seccion__intro">No solo te lo digo: pruébalo. Cada pestaña es un ejemplo con datos ficticios.</p>
+      </div>
+      <div id="taller" class="taller"></div>
+
+      <div class="herramientas">
+        <div><h3>Excel y Power Query</h3><ul><li>Excel avanzado</li><li>BUSCARX</li><li>SI</li><li>SUMAPRODUCTO</li><li>Tablas dinámicas</li><li>Power Query (Excel y Power BI)</li></ul></div>
+        <div><h3>BI y datos</h3><ul><li>Power BI</li><li>DAX</li><li>Modelado de datos</li><li>Google Sheets</li><li>SQL (básico)</li><li>Python: análisis de datos con pandas</li><li>Streamlit</li><li>Jupyter Notebook</li></ul></div>
+        <div><h3>Automatización e IA</h3><ul><li>n8n</li><li>Integración de IA vía API (Gemini)</li><li>Extracción de datos con IA (OCR)</li><li>Desarrollo asistido por IA</li><li>Prompt engineering</li><li>Google Apps Script</li><li>HTML y JavaScript</li></ul></div>
+        <div><h3>Finanzas y procesos</h3><ul><li>Flujo de caja</li><li>EBITDA y EBIT</li><li>IGV y detracciones</li><li>Conciliaciones</li><li>Costos y precios</li><li>KPI</li><li>Mapeo de procesos</li><li>Manuales y checklists</li></ul></div>
+      </div>
+    </section>
+
+    <!-- ===== 7. EXPERIENCIA Y FORMACIÓN ===== -->
+    <section id="experiencia" class="seccion">
+      <div class="seccion__cabeza">
+        <div>
+          <p class="etiqueta">Experiencia</p>
+          <h2 class="seccion__titulo">Dónde lo he <em>aplicado</em>.</h2>
+        </div>
+      </div>
+      <div class="exp-grid">
+        <!-- data-casos: los id de los casos de ese trabajo (ver casos.js) -->
+        <ol class="experiencia">
+          <li>
+            <span class="experiencia__fecha">oct 2026 — actualidad</span>
+            <h3>Administradora · Endore</h3>
+            <p>Clínica de endocrinología. Trabajo de la mano con la gerencia: finanzas, farmacia, convenios y análisis de datos.</p>
+            <div class="experiencia__casos" data-casos="retencion,financiero-endore,conciliacion,precios"></div>
+          </li>
+          <li>
+            <span class="experiencia__fecha">ago 2025 — actualidad</span>
+            <h3>Grupo UP · Construcción</h3>
+            <p>Soporte Financiero y de Sistemas (freelance, desde ago 2026). Antes, Practicante Pre Profesional en Gerencia General.</p>
+            <div class="experiencia__casos" data-casos="gastos-obra,kardex,tdr,procesos"></div>
+          </li>
+          <li>
+            <span class="experiencia__fecha">feb 2026 — ago 2026</span>
+            <h3>Practicante profesional, Experiencia del Colaborador · Caja Trujillo</h3>
+            <p>Dashboards y bases de datos de clima laboral para la certificación Great Place to Work.</p>
+            <div class="experiencia__casos" data-casos="clima"></div>
+          </li>
+          <li>
+            <span class="experiencia__fecha">Proyecto personal</span>
+            <h3>DataMatch · App en Python</h3>
+            <p>Cruce de bases de Excel con nombres escritos distinto.</p>
+            <div class="experiencia__casos" data-casos="datamatch"></div>
+          </li>
+        </ol>
+
+        <aside class="formacion">
+          <p class="etiqueta">Formación y certificaciones</p>
+          <ul>
+            <li><b>Bachiller en Ingeniería Industrial</b><span>Universidad Privada del Norte (UPN) · 2021 – 2025</span></li>
+            <li><b>Especialización en Análisis de Datos</b><span>WE Educación Ejecutiva · 2026 · Power BI, SQL Server for Analytics y Python: Análisis de Datos (30 h c/u)</span></li>
+            <li><b>Especialización en Power Pivot y Power BI</b><span>Colegio de Ingenieros del Perú · 30 h · nota 19</span></li>
+            <li><b>Análisis de Datos con Power BI</b><span>Becas Grupo Romero / UPC</span></li>
+            <li><b>Inglés B2 certificado</b><span>WeTalkUPC</span></li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== 8. CONTACTO ===== -->
+  <footer id="contacto" class="contacto">
+    <p class="contacto__logo">Xime<span class="oro">.</span></p>
+    <p class="etiqueta">Contacto</p>
+    <div class="contacto__botones">
+      <a class="pastilla" href="mailto:ximenaurquizopon2508@gmail.com">ximenaurquizopon2508@gmail.com ↗</a>
+      <a class="pastilla" href="https://wa.me/51940138547" target="_blank" rel="noopener"><span class="pastilla__punto"></span>WhatsApp · +51 940 138 547 ↗</a>
+      <a class="pastilla" href="CV-Ximena-Urquizo.pdf" download>CV ↓</a>
+    </div>
+    <p class="contacto__pie">© 2026 Ximena Urquizo Ponce</p>
+  </footer>
+
+  <!-- FICHA DE CASO: escondida hasta que haces clic en una tarjeta -->
+  <div id="ficha" class="ficha" hidden>
+    <div class="ficha__barra">
+      <button class="ficha__volver" data-accion="cerrar">← Volver<span class="solo-desk"> a las preguntas</span></button>
+      <div class="ficha__nav">
+        <span id="ficha-contador" class="etiqueta"></span>
+        <button class="ficha__flecha" data-accion="anterior" aria-label="Caso anterior">←</button>
+        <button class="ficha__flecha" data-accion="siguiente" aria-label="Caso siguiente">→</button>
+      </div>
+    </div>
+    <article id="ficha-contenido" class="ficha__contenido"></article>
+  </div>
+
+  <!-- Primero los DATOS, después la LÓGICA que los usa -->
+  <script src="casos.js"></script>
+  <script src="personal.js"></script>
+  <script src="ejemplos.js"></script>
+  <script src="main.js"></script>
+  <script src="interactivos.js"></script>
+</body>
+</html>

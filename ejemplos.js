@@ -20,34 +20,106 @@ const EJEMPLOS = {
     html: () => `
       <div class="ej-botones">
         <button class="ej-boton activo" data-vista="antes">Antes: flujo de caja</button>
-        <button class="ej-boton" data-vista="despues">Después: indicadores</button>
+        <button class="ej-boton" data-vista="semaforo">Semáforo del mes</button>
+        <button class="ej-boton" data-vista="servicios">Ganancia por servicio</button>
       </div>
 
       <div data-panel="antes" class="ej-panel">
-        <p class="ej-titulo">Flujo de caja · mes ficticio</p>
-        <div class="ej-fila"><span>Ingresos</span><b>${soles(48000)}</b></div>
-        <div class="ej-fila"><span>Egresos</span><b>${soles(40000)}</b></div>
-        <div class="ej-fila ej-fila--total"><span>Saldo</span><b>${soles(8000)}</b></div>
-        <p class="ej-pista">¿Es bueno? ¿Cuánto es del negocio y cuánto del impuesto? No se sabe.</p>
+        <p class="ej-titulo">Cierre de mes · clínica ficticia</p>
+        <div class="ej-fila"><span>Entró</span><b>${soles(62000)}</b></div>
+        <div class="ej-fila"><span>Salió</span><b>${soles(58500)}</b></div>
+        <div class="ej-fila ej-fila--total"><span>Saldo</span><b>${soles(3500)}</b></div>
+        <p class="ej-pista">¿Fue un buen mes? ¿Qué servicio dejó plata? ¿Qué cambiar? Con esto, no se sabe.</p>
       </div>
 
-      <div data-panel="despues" class="ej-panel" hidden>
-        <div class="ej-kpis">
-          <div class="ej-kpi"><span>EBITDA</span><b>${soles(9300)}</b><small>19% de ingresos</small></div>
-          <div class="ej-kpi"><span>EBIT</span><b>${soles(8000)}</b><small>después de depreciación</small></div>
-          <div class="ej-kpi ej-kpi--alerta"><span>IGV por pagar</span><b>${soles(2340)}</b><small>separar antes del día 15</small></div>
+      <div data-panel="semaforo" class="ej-panel" hidden>
+        <div class="ej-control">
+          <span>Mes:</span>
+          <select class="ej-select" data-mes>
+            <option value="0">Agosto</option><option value="1">Septiembre</option><option value="2" selected>Octubre</option>
+          </select>
         </div>
-        <p class="ej-titulo">Atenciones por profesional</p>
-        ${[["Profesional A", 142], ["Profesional B", 98], ["Profesional C", 76], ["Profesional D", 54]]
-          .map(([nombre, n]) => `
-            <div class="ej-barra">
-              <span>${nombre}</span>
-              <div class="ej-barra__fondo"><div class="ej-barra__relleno" style="width:${n / 142 * 100}%"></div></div>
-              <b>${n}</b>
-            </div>`).join("")}
+        <div class="sem" data-sem></div>
+        <p class="ej-resultado" data-sem-resumen></p>
+      </div>
+
+      <div data-panel="servicios" class="ej-panel" hidden>
+        <p class="ej-titulo">Lo que queda de cada servicio · después de IGV y tarjeta</p>
+        <div class="serv" data-serv></div>
+        <div class="ej-control">
+          <span>Precio de la bioimpedancia:</span>
+          <input type="range" min="40" max="120" step="5" value="70" data-precio>
+          <b data-precio-txt></b>
+        </div>
+        <p class="ej-resultado" data-serv-resumen></p>
       </div>
     `,
     iniciar: (raiz) => {
+      // ---------- Semáforo: datos ficticios por mes ----------
+      // [indicador, meta, tipo ("min" = mayor o igual es bueno, "max" = menor o igual), valores por mes]
+      const INDICADORES = [
+        ["Margen EBITDA", 15, "min", [12.4, 16.8, 18.1]],
+        ["Margen de seguridad", 10, "min", [4.2, 8.9, 12.5]],
+        ["% pacientes que regresan", 50, "min", [41.0, 47.5, 53.2]],
+        ["Crecimiento vs. mes anterior", 3, "min", [1.1, 5.4, 2.6]],
+        ["Comisión de tarjeta / ingresos", 2.2, "max", [2.9, 2.4, 2.1]],
+        ["Personal / ingresos", 12, "max", [13.8, 11.6, 10.9]]
+      ];
+      const estado = (valor, meta, tipo) => {
+        const bien = tipo === "min" ? valor >= meta : valor <= meta;
+        if (bien) return "ok";
+        const distancia = Math.abs(valor - meta) / meta;
+        return distancia <= 0.15 ? "alerta" : "critico";
+      };
+      const TEXTO = { ok: "OK", alerta: "ALERTA", critico: "CRÍTICO" };
+
+      function pintarSemaforo() {
+        const mes = Number(raiz.querySelector("[data-mes]").value);
+        const conteo = { ok: 0, alerta: 0, critico: 0 };
+        const filas = INDICADORES.map(([nombre, meta, tipo, valores]) => {
+          const v = valores[mes], e = estado(v, meta, tipo);
+          conteo[e]++;
+          return `<div class="sem__fila"><span>${nombre}</span><span>${v.toFixed(1)}%</span>
+            <span>${tipo === "min" ? "≥" : "≤"} ${meta}%</span><span class="sem__pill sem__pill--${e}">${TEXTO[e]}</span></div>`;
+        }).join("");
+        raiz.querySelector("[data-sem]").innerHTML =
+          `<div class="sem__fila sem__fila--cabeza"><span>Indicador</span><span>Mes</span><span>Meta</span><span>Estado</span></div>` + filas;
+        const peor = INDICADORES.find(([, meta, tipo, valores]) => estado(valores[mes], meta, tipo) === "critico");
+        raiz.querySelector("[data-sem-resumen]").textContent = peor
+          ? `${conteo.ok} en verde, ${conteo.critico} en rojo. Primera decisión: atacar "${peor[0].toLowerCase()}".`
+          : `${conteo.ok} en verde y ${conteo.alerta} en alerta: un buen mes, a cuidar lo que está en amarillo.`;
+      }
+      raiz.querySelector("[data-mes]").addEventListener("change", pintarSemaforo);
+      pintarSemaforo();
+
+      // ---------- Ganancia por servicio ----------
+      const IGV = 0.18, TARJETA = 0.025;
+      // [servicio, cobrado (con IGV), costo directo]; la bioimpedancia se calcula con el precio del control
+      const FIJOS = [["Consultas", 30000, 20500], ["Laboratorio", 21000, 16900], ["Imagenología", 4200, 2500]];
+      const BIO = { cantidad: 60, costoUnitario: 38 };
+
+      function pintarServicios() {
+        const precio = Number(raiz.querySelector("[data-precio]").value);
+        raiz.querySelector("[data-precio-txt]").textContent = soles(precio);
+        const filas = [...FIJOS, ["Bioimpedancia", BIO.cantidad * precio, BIO.cantidad * BIO.costoUnitario]]
+          .map(([nombre, cobrado, costo]) => {
+            const queda = cobrado / (1 + IGV) - cobrado * TARJETA - costo;
+            return { nombre, queda, margen: queda / cobrado * 100 };
+          });
+        const maximo = Math.max(...filas.map(f => Math.abs(f.queda)), 1);
+        raiz.querySelector("[data-serv]").innerHTML = filas.map(f => `
+          <div class="serv__fila"><span>${f.nombre}</span>
+            <div class="serv__barra"><div style="width:${Math.max(f.queda, 0) / maximo * 100}%"></div></div>
+            <b>${soles(Math.round(f.queda))}</b></div>`).join("");
+        const bio = filas[3];
+        raiz.querySelector("[data-serv-resumen]").textContent = bio.queda <= 0
+          ? `A ${soles(precio)}, cada bioimpedancia pierde plata: el IGV y la tarjeta se comen el margen.`
+          : `A ${soles(precio)}, a la bioimpedancia le queda ${bio.margen.toFixed(0)}% de lo cobrado.`;
+      }
+      raiz.querySelector("[data-precio]").addEventListener("input", pintarServicios);
+      pintarServicios();
+
+      // ---------- Pestañas ----------
       raiz.addEventListener("click", (e) => {
         const vista = e.target.dataset.vista;
         if (!vista) return;
@@ -717,7 +789,7 @@ const EJEMPLOS = {
           const exacto = referencia.find(([n]) => adn(n) === limpio);
           if (exacto) { encontrados++; return `<div class="ej-fila dm-exacto"><span>${nombre}</span><b>${exacto[1]}</b></div>`; }
           const mejor = referencia.map(([n, area]) => ({ n, area, p: parecido(limpio, adn(n)) })).sort((x, y) => y.p - x.p)[0];
-          if (mejor.p >= 50) { encontrados++; return `<div class="ej-fila dm-parecido" title="Se usó: ${mejor.n}"><span>${nombre} <small>${mejor.p}% · ${mejor.n}</small></span><b>${mejor.area}</b></div>`; }
+          if (mejor.p >= 50) { encontrados++; return `<div class="ej-fila dm-parecido" title="Se usó: ${mejor.n}"><span class="dm-nombre">${nombre}<small>Se parece ${mejor.p}% a "${mejor.n}"</small></span><b>${mejor.area}</b></div>`; }
           return `<div class="ej-fila dm-no"><span>${nombre}</span><b>NO ENCONTRADO</b></div>`;
         });
         pintarTrabajo(filas);

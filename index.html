@@ -58,8 +58,6 @@
         <div class="portada__botones">
           <a href="#contacto" class="boton boton--lleno">Conversemos ↗</a>
           <a href="#casos" class="boton">Ver casos ↘</a>
-          <!-- Sube tu CV en PDF con este nombre exacto, junto a los demás archivos -->
-          <a href="CV-Ximena-Urquizo.pdf" class="boton" download>Descargar CV ↓</a>
         </div>
         <p class="portada__contacto">WhatsApp +51 940 138 547 · ximenaurquizopon2508@gmail.com</p>
       </div>
@@ -82,35 +80,19 @@
         <div class="metodo__paso aparecer"><span class="metodo__num">02</span><div><b>Estructuro</b><p>La solución: qué medir, qué mejorar y quién la va a usar.</p></div></div>
         <div class="metodo__paso aparecer"><span class="metodo__num">03</span><div><b>Construyo con IA</b><p>La herramienta, y valido que funcione y cuadre.</p></div></div>
       </div>
-      <dl class="impacto">
-        <div><dt>10 días → al instante</dt><dd>utilidad e IGV por obra</dd></div>
-        <div><dt>106 agencias</dt><dd>en un dashboard de clima en Power BI</dd></div>
-        <div><dt>3 obras</dt><dd>con inventario y alertas diarias</dd></div>
-        <div><dt>10 casos</dt><dd>con ejemplos que puedes probar</dd></div>
-      </dl>
     </section>
 
-    <!-- ===== 2. RED: casos y herramientas conectados ===== -->
-    <section id="red-seccion" class="seccion">
+    <!-- ===== 2. TABLERO: casos y herramientas unidos con hilo (interactivos.js) ===== -->
+    <section id="tablero-seccion" class="seccion">
       <div class="seccion__cabeza">
         <div>
-          <p class="etiqueta">Mi trabajo, en una vista</p>
-          <h2 class="seccion__titulo">Nada vive <em>por separado</em>.</h2>
+          <p class="etiqueta">Mi trabajo, en un tablero</p>
+          <h2 class="seccion__titulo">Todo está <em>conectado</em>.</h2>
         </div>
-        <p class="seccion__intro">Mis casos comparten herramientas y una forma de trabajar. Toca un punto para explorarlo.</p>
+        <p class="seccion__intro">Toca una herramienta para ver en qué casos la usé. Toca una foto para abrir el caso.</p>
       </div>
-      <div class="red">
-        <div class="red__caja">
-          <div class="red__filtros">
-            <button class="filtro activo" data-red="todo">Todo</button>
-            <button class="filtro" data-red="caso">Casos</button>
-            <button class="filtro" data-red="herramienta">Herramientas</button>
-            <span class="red__cuenta" id="red-cuenta"></span>
-          </div>
-          <svg id="red" class="red__lienzo" role="group" aria-label="Red de casos y herramientas"></svg>
-        </div>
-        <div id="red-panel" class="red__panel"></div>
-      </div>
+      <div id="tablero" class="tablero"></div>
+      <p id="tablero-nota" class="tablero__nota">Pasa el mouse por una foto o una herramienta.</p>
     </section>
 
     <!-- ===== 3. CASOS ===== -->
@@ -178,7 +160,7 @@
       <div id="taller" class="taller"></div>
 
       <div class="herramientas">
-        <div><h3>Excel y Power Query</h3><ul><li>Excel avanzado</li><li>BUSCARX</li><li>SI</li><li>SUMAPRODUCTO</li><li>Tablas dinámicas</li><li>Power Query (Excel y Power BI)</li></ul></div>
+        <div><h3>Excel y Power Query</h3><ul><li>Excel avanzado</li><li>BUSCARV / BUSCARX</li><li>SI (con Y / O)</li><li>SUMAR.SI.CONJUNTO</li><li>CONTAR.SI.CONJUNTO</li><li>INDICE + COINCIDIR</li><li>SIERROR</li><li>Tablas dinámicas</li><li>Formato condicional</li><li>Validación de datos</li><li>Macros VBA (básico)</li><li>Power Query (Excel y Power BI)</li></ul></div>
         <div><h3>BI y datos</h3><ul><li>Power BI</li><li>DAX</li><li>Modelado de datos</li><li>Google Sheets</li><li>SQL (básico)</li><li>Python: análisis de datos con pandas</li><li>Streamlit</li><li>Jupyter Notebook</li></ul></div>
         <div><h3>Automatización e IA</h3><ul><li>n8n</li><li>Integración de IA vía API (Gemini)</li><li>Extracción de datos con IA (OCR)</li><li>Desarrollo asistido por IA</li><li>Prompt engineering</li><li>Google Apps Script</li><li>HTML y JavaScript</li></ul></div>
         <div><h3>Finanzas y procesos</h3><ul><li>Flujo de caja</li><li>EBITDA y EBIT</li><li>IGV y detracciones</li><li>Conciliaciones</li><li>Costos y precios</li><li>KPI</li><li>Mapeo de procesos</li><li>Manuales y checklists</li></ul></div>
@@ -244,7 +226,6 @@
     <div class="contacto__botones">
       <a class="pastilla" href="mailto:ximenaurquizopon2508@gmail.com">ximenaurquizopon2508@gmail.com ↗</a>
       <a class="pastilla" href="https://wa.me/51940138547" target="_blank" rel="noopener"><span class="pastilla__punto"></span>WhatsApp · +51 940 138 547 ↗</a>
-      <a class="pastilla" href="CV-Ximena-Urquizo.pdf" download>CV ↓</a>
     </div>
     <p class="contacto__pie">© 2026 Ximena Urquizo Ponce</p>
   </footer>

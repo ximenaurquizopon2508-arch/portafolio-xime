@@ -2,7 +2,7 @@
   interactivos.js = las piezas interactivas de la página principal:
     1) Barra de progreso arriba
     2) La HOJITA de la portada que se ordena sola
-    3) La RED de casos y herramientas
+    3) El TABLERO (moodboard) de casos y herramientas
     4) "Una decisión que puedes probar": IGV de bolsillo
     5) El TALLER de herramientas: Excel, Power Query, Power BI, SQL y Python
   Todo con datos ficticios.
@@ -77,7 +77,7 @@ function iniciarHojita() {
 }
 
 
-// ======================= 3) RED DE CASOS Y HERRAMIENTAS =======================
+// ======================= 3) TABLERO: CASOS Y HERRAMIENTAS UNIDOS CON HILO =======================
 const NODOS_HERRAMIENTA = {
   excel:      { nombre: "Excel",        texto: "Bases de datos, BUSCARX, SI, SUMAPRODUCTO, tablas dinámicas y Power Query." },
   powerbi:    { nombre: "Power BI",     texto: "Modelos de datos, medidas en DAX y dashboards por jerarquía." },
@@ -103,71 +103,98 @@ const CONEXIONES = {
   "retencion":         ["python", "ia"]
 };
 
-function iniciarRed() {
-  const svg = document.getElementById("red");
-  const panel = document.getElementById("red-panel");
-  const ancho = 720, alto = 440, cx = ancho / 2, cy = alto / 2;
-  const nodos = [{ id: "xime", tipo: "centro", nombre: "Xime", x: cx, y: cy }];
-  const herr = Object.keys(NODOS_HERRAMIENTA);
-  herr.forEach((id, i) => {
-    const ang = (i / herr.length) * Math.PI * 2 - Math.PI / 2;
-    nodos.push({ id, tipo: "herramienta", nombre: NODOS_HERRAMIENTA[id].nombre, x: cx + Math.cos(ang) * 125, y: cy + Math.sin(ang) * 108 });
-  });
-  CASOS.forEach((caso, i) => {
-    const ang = (i / CASOS.length) * Math.PI * 2 - Math.PI / 2 + 0.17;
-    nodos.push({ id: caso.id, tipo: "caso", nombre: caso.numero, caso, x: cx + Math.cos(ang) * 300, y: cy + Math.sin(ang) * 188 });
-  });
-  const buscar = (id) => nodos.find(n => n.id === id);
-  const lineas = herr.map(h => ["xime", h]);
-  Object.entries(CONEXIONES).forEach(([caso, lista]) => { if (buscar(caso)) lista.forEach(h => lineas.push([caso, h])); });
+// Nombre corto de cada caso para su foto en el tablero
+const TITULO_CORTO = {
+  "financiero-endore": "Flujo de caja", "kardex": "Kárdex de obra", "gastos-obra": "Gastos de obra",
+  "conciliacion": "Conciliación", "precios": "Precios", "tdr": "Alertas TDR", "clima": "Clima laboral",
+  "procesos": "Manual de procesos", "datamatch": "DataMatch", "retencion": "Retención"
+};
 
-  document.getElementById("red-cuenta").textContent = `${nodos.length} puntos / ${lineas.length} conexiones`;
-  svg.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
-  svg.innerHTML = `
-    <g class="red__lineas">${lineas.map(([a, b]) => { const A = buscar(a), B = buscar(b);
-      return `<line data-a="${a}" data-b="${b}" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`; }).join("")}</g>
-    <g>${nodos.map(n => `
-      <g class="red__nodo red__nodo--${n.tipo}" data-id="${n.id}" data-tipo="${n.tipo}" tabindex="0" role="button"
-         aria-label="${n.tipo === "caso" ? n.caso.pregunta : n.nombre}" transform="translate(${n.x} ${n.y})">
-        <g class="red__flota">
-          <circle r="${n.tipo === "centro" ? 30 : n.tipo === "caso" ? 19 : 8}"/>
-          <text y="${n.tipo === "herramienta" ? 22 : 5}">${n.nombre}</text>
-        </g>
-      </g>`).join("")}</g>`;
+function iniciarTablero() {
+  const tablero = document.getElementById("tablero");
+  const nota = document.getElementById("tablero-nota");
+  const mitad = Math.ceil(CASOS.length / 2);
 
-  const inicio = `<p class="etiqueta">Punto de partida</p><h3>Un sistema de conexiones.</h3>
-    <p>Los números son mis casos; los puntos chicos, mis herramientas. Selecciona uno para ver qué hace y con qué se relaciona.</p>`;
-  panel.innerHTML = inicio;
+  // Una "polaroid" por caso (con cinta rosa arriba)
+  const foto = (caso) => {
+    const giro = ((CASOS.indexOf(caso) * 37) % 9) - 4;          // giro "al azar" pero siempre igual
+    const imagen = caso.icono
+      ? `<img src="${caso.icono}" alt="">`
+      : `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONOS[caso.categoria] || ""}</svg>`;
+    return `<button class="polaroid" data-id="${caso.id}" data-abrir="${CASOS.indexOf(caso)}" style="--giro:${giro}deg"
+              aria-label="${caso.pregunta}">
+              <span class="polaroid__foto polaroid__foto--${caso.categoria}">${imagen}</span>
+              <span class="polaroid__pie"><b>${caso.numero}</b> ${TITULO_CORTO[caso.id] || caso.area}</span>
+            </button>`;
+  };
+  const herramientas = Object.entries(NODOS_HERRAMIENTA).map(([id, h]) =>
+    `<button class="etiqueta-herr" data-herr="${id}">${h.nombre}</button>`).join("");
 
-  function elegir(id) {
-    const n = buscar(id);
-    const vecinos = new Set([id]);
-    lineas.forEach(([a, b]) => { if (a === id) vecinos.add(b); if (b === id) vecinos.add(a); });
-    svg.classList.add("red--foco");
-    svg.querySelectorAll(".red__nodo").forEach(g => g.classList.toggle("activo", vecinos.has(g.dataset.id)));
-    svg.querySelectorAll("line").forEach(l => l.classList.toggle("activo", l.dataset.a === id || l.dataset.b === id));
-    if (n.tipo === "caso") {
-      panel.innerHTML = `<p class="etiqueta">Caso ${n.caso.numero} · ${n.caso.area}</p><h3>${n.caso.pregunta}</h3>
-        <p>${n.caso.resumen}</p><button class="boton boton--lleno" data-abrir="${CASOS.indexOf(n.caso)}">Ver el caso →</button>`;
-    } else if (n.tipo === "herramienta") {
-      const usos = CASOS.filter(c => (CONEXIONES[c.id] || []).includes(id));
-      panel.innerHTML = `<p class="etiqueta">Herramienta</p><h3>${n.nombre}</h3><p>${NODOS_HERRAMIENTA[id].texto}</p>
-        ${usos.length ? `<p class="red__usos">La usé en: ${usos.map(c => `<button class="chip-caso" data-abrir="${CASOS.indexOf(c)}"><span class="oro">${c.numero}</span></button>`).join(" ")}</p>` : ""}`;
-    } else { panel.innerHTML = inicio; svg.classList.remove("red--foco"); }
+  tablero.innerHTML = `
+    <svg class="tablero__hilos" aria-hidden="true"></svg>
+    <div class="tablero__fila">${CASOS.slice(0, mitad).map(foto).join("")}</div>
+    <div class="tablero__herramientas">${herramientas}</div>
+    <div class="tablero__fila">${CASOS.slice(mitad).map(foto).join("")}</div>`;
+
+  const svg = tablero.querySelector(".tablero__hilos");
+  const centro = (el, hacia) => {           // punto de amarre: borde de arriba o de abajo del elemento
+    const r = el.getBoundingClientRect(), t = tablero.getBoundingClientRect();
+    return { x: r.left - t.left + r.width / 2, y: (hacia === "abajo" ? r.bottom : r.top) - t.top };
+  };
+
+  // Dibuja los hilos entre una herramienta y sus casos (o un caso y sus herramientas)
+  function hilos(pares) {
+    svg.setAttribute("width", tablero.clientWidth);
+    svg.setAttribute("height", tablero.clientHeight);
+    svg.innerHTML = pares.map(([herr, foto]) => {
+      const fotoArriba = foto.getBoundingClientRect().top < herr.getBoundingClientRect().top;
+      const a = centro(herr, fotoArriba ? "arriba" : "abajo");
+      const b = centro(foto, fotoArriba ? "abajo" : "arriba");
+      const medio = (a.y + b.y) / 2 + 18;   // el hilo cuelga un poquito
+      return `<path d="M${a.x} ${a.y} Q ${(a.x + b.x) / 2} ${medio} ${b.x} ${b.y}"/><circle cx="${b.x}" cy="${b.y}" r="3"/>`;
+    }).join("");
   }
-  svg.addEventListener("click", (e) => { const g = e.target.closest(".red__nodo"); if (g) elegir(g.dataset.id); });
-  svg.addEventListener("keydown", (e) => { const g = e.target.closest(".red__nodo"); if (g && e.key === "Enter") elegir(g.dataset.id); });
 
-  // Filtros: Todo · Casos · Herramientas
-  document.querySelector(".red__filtros").addEventListener("click", (e) => {
-    const f = e.target.dataset.red;
-    if (!f) return;
-    document.querySelectorAll("[data-red]").forEach(b => b.classList.toggle("activo", b.dataset.red === f));
-    svg.classList.toggle("red--foco", f !== "todo");
-    svg.querySelectorAll(".red__nodo").forEach(g => g.classList.toggle("activo", f === "todo" || g.dataset.tipo === f || g.dataset.tipo === "centro"));
-    svg.querySelectorAll("line").forEach(l => l.classList.remove("activo"));
-    panel.innerHTML = inicio;
+  function resaltar(tipo, id) {
+    let pares = [], texto = "";
+    if (tipo === "herr") {
+      const usos = CASOS.filter(c => (CONEXIONES[c.id] || []).includes(id));
+      const h = tablero.querySelector(`[data-herr="${id}"]`);
+      pares = usos.map(c => [h, tablero.querySelector(`.polaroid[data-id="${c.id}"]`)]);
+      texto = `${NODOS_HERRAMIENTA[id].nombre}: ${NODOS_HERRAMIENTA[id].texto}` + (usos.length ? ` La usé en ${usos.length} caso${usos.length > 1 ? "s" : ""}.` : "");
+    } else {
+      const caso = CASOS.find(c => c.id === id);
+      const f = tablero.querySelector(`.polaroid[data-id="${id}"]`);
+      pares = (CONEXIONES[id] || []).map(hid => [tablero.querySelector(`[data-herr="${hid}"]`), f]);
+      texto = `${caso.numero} · ${caso.pregunta}`;
+    }
+    const activos = new Set(pares.flat());
+    tablero.classList.add("tablero--foco");
+    tablero.querySelectorAll(".polaroid, .etiqueta-herr").forEach(el => el.classList.toggle("activo", activos.has(el)));
+    hilos(pares);
+    nota.textContent = texto;
+  }
+  function soltar() {
+    tablero.classList.remove("tablero--foco");
+    tablero.querySelectorAll(".activo").forEach(el => el.classList.remove("activo"));
+    svg.innerHTML = "";
+    nota.textContent = "Pasa el mouse por una foto o una herramienta.";
+  }
+
+  // Mouse encima = mostrar hilos. Clic en herramienta = dejarla fija. Clic en foto = abre el caso (main.js)
+  let fija = null;
+  tablero.addEventListener("mouseover", (e) => {
+    const el = e.target.closest(".polaroid, .etiqueta-herr");
+    if (el) resaltar(el.dataset.herr ? "herr" : "caso", el.dataset.herr || el.dataset.id);
   });
+  tablero.addEventListener("mouseleave", () => fija ? resaltar("herr", fija) : soltar());
+  tablero.addEventListener("click", (e) => {
+    const h = e.target.closest(".etiqueta-herr");
+    if (!h) return;
+    fija = fija === h.dataset.herr ? null : h.dataset.herr;
+    fija ? resaltar("herr", fija) : soltar();
+  });
+  window.addEventListener("resize", () => fija ? resaltar("herr", fija) : soltar());
 }
 
 
@@ -241,49 +268,98 @@ const PESTANAS = {
   excel: {
     nombre: "Excel",
     iniciar(caja) {
+      const funciones = [["buscar", "BUSCARV / BUSCARX"], ["si", "SI + Y"], ["sumarsi", "SUMAR.SI.CONJUNTO"], ["contarsi", "CONTAR.SI.CONJUNTO"],
+                         ["indice", "INDICE + COINCIDIR"], ["sierror", "SIERROR"], ["formato", "Formato condicional"], ["din", "Tabla dinámica"], ["vba", "Macro VBA · básico"]];
       caja.innerHTML = `
-        <div class="lab__botones">
-          <button class="ej-boton activo" data-f="buscarx">BUSCARX</button><button class="ej-boton" data-f="si">SI</button>
-          <button class="ej-boton" data-f="suma">SUMAPRODUCTO</button><button class="ej-boton" data-f="din">Tabla dinámica</button>
-        </div>
+        <div class="lab__botones">${funciones.map(([k, n], i) => `<button class="ej-boton ${i === 0 ? "activo" : ""}" data-f="${k}">${n}</button>`).join("")}</div>
         <div class="lab__control" data-control></div>
         <div class="lab__fx"><span>fx</span><code data-formula></code></div>
+        <div data-extra></div>
         <div class="lab__hoja" data-hoja></div>
         <p class="lab__explica" data-explica></p>`;
-      let f = "buscarx", codigo = "G-03", obra = "OBR-001";
+      let f = "buscar", codigo = "G-03", obra = "OBR-001", categoria = "Transporte", buscado = "G-09";
       const cols = ["Código", "Obra", "Categoría", "Monto", "Presupuesto"];
       const q = (s) => caja.querySelector(s);
+      const selector = (data, opciones, actual) => `<select class="ej-select" data-${data}>${opciones.map(o => `<option ${o === actual ? "selected" : ""}>${o}</option>`).join("")}</select>`;
+      const codigos = TABLA.map(r => r[0]), obras = ["OBR-001", "OBR-002"], cats = [...new Set(TABLA.map(r => r[2]))];
+
       function mostrar() {
-        if (f === "buscarx") {
-          q("[data-control]").innerHTML = `Buscar el código <select class="ej-select" data-codigo>${TABLA.map(r => `<option ${r[0] === codigo ? "selected" : ""}>${r[0]}</option>`).join("")}</select>`;
+        q("[data-extra]").innerHTML = "";
+        if (f === "buscar") {
+          q("[data-control]").innerHTML = `Buscar el monto del código ${selector("codigo", codigos, codigo)}`;
           const i = TABLA.findIndex(r => r[0] === codigo);
-          q("[data-formula]").textContent = `=BUSCARX("${codigo}"; A2:A7; D2:D7)  →  ${miles(TABLA[i][3])}`;
+          q("[data-formula]").textContent = `=BUSCARX("${codigo}"; A2:A7; D2:D7)   ·   =BUSCARV("${codigo}"; A2:E7; 4; FALSO)   →  ${miles(TABLA[i][3])}`;
           q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (r, c) => r === i && (c === 0 || c === 3) });
-          q("[data-explica]").textContent = "Encuentra un dato en una base grande sin buscarlo a mano.";
+          q("[data-explica]").textContent = "Las dos encuentran el dato; BUSCARX es más flexible porque no depende del número de columna.";
         }
         if (f === "si") {
-          q("[data-control]").textContent = "Marcar qué gasto se pasó de su presupuesto";
-          q("[data-formula]").textContent = `=SI(D2>E2; "Se pasó"; "OK")`;
-          const filas = TABLA.map(r => [...r, r[3] > r[4] ? "Se pasó" : "OK"]);
-          q("[data-hoja]").innerHTML = hojaExcel([...cols, "Estado"], filas, { marcar: (r, c) => c === 5 && TABLA[r][3] > TABLA[r][4] });
-          q("[data-explica]").textContent = `${TABLA.filter(r => r[3] > r[4]).length} de ${TABLA.length} gastos se pasaron. Una regla simple que convierte una tabla en alertas.`;
+          q("[data-control]").textContent = "Marcar los gastos de materiales que se pasaron de su presupuesto";
+          q("[data-formula]").textContent = `=SI(Y(D2>E2; C2="Materiales"); "Revisar"; "OK")`;
+          const filas = TABLA.map(r => [...r, r[3] > r[4] && r[2] === "Materiales" ? "Revisar" : "OK"]);
+          q("[data-hoja]").innerHTML = hojaExcel([...cols, "Estado"], filas, { marcar: (r, c) => c === 5 && filas[r][5] === "Revisar" });
+          q("[data-explica]").textContent = "Con Y se cumplen las dos condiciones; con O, basta una.";
         }
-        if (f === "suma") {
-          q("[data-control]").innerHTML = `Total gastado por <select class="ej-select" data-obra>${["OBR-001", "OBR-002"].map(o => `<option ${o === obra ? "selected" : ""}>${o}</option>`).join("")}</select>`;
-          const total = TABLA.filter(r => r[1] === obra).reduce((s, r) => s + r[3], 0);
-          q("[data-formula]").textContent = `=SUMAPRODUCTO((B2:B7="${obra}") * D2:D7)  →  ${miles(total)}`;
-          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (r, c) => TABLA[r][1] === obra && (c === 1 || c === 3) });
-          q("[data-explica]").textContent = "Suma solo lo que cumple una condición, sin columnas de apoyo ni filtros.";
+        if (f === "sumarsi") {
+          q("[data-control]").innerHTML = `Total de ${selector("cat", cats, categoria)} en ${selector("obra", obras, obra)}`;
+          const total = TABLA.filter(r => r[1] === obra && r[2] === categoria).reduce((s, r) => s + r[3], 0);
+          q("[data-formula]").textContent = `=SUMAR.SI.CONJUNTO(D2:D7; B2:B7; "${obra}"; C2:C7; "${categoria}")  →  ${miles(total)}`;
+          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (r, c) => TABLA[r][1] === obra && TABLA[r][2] === categoria && [1, 2, 3].includes(c) });
+          q("[data-explica]").textContent = "Suma solo las filas que cumplen todas las condiciones.";
+        }
+        if (f === "contarsi") {
+          q("[data-control]").innerHTML = `¿Cuántos gastos de más de S/ 1,000 tiene ${selector("obra", obras, obra)}?`;
+          const n = TABLA.filter(r => r[1] === obra && r[3] > 1000).length;
+          q("[data-formula]").textContent = `=CONTAR.SI.CONJUNTO(B2:B7; "${obra}"; D2:D7; ">1000")  →  ${n}`;
+          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (r, c) => TABLA[r][1] === obra && TABLA[r][3] > 1000 && (c === 1 || c === 3) });
+          q("[data-explica]").textContent = "Cuenta las filas que cumplen todas las condiciones.";
+        }
+        if (f === "indice") {
+          q("[data-control]").innerHTML = `Presupuesto del código ${selector("codigo", codigos, codigo)}`;
+          const i = TABLA.findIndex(r => r[0] === codigo);
+          q("[data-formula]").textContent = `=INDICE(E2:E7; COINCIDIR("${codigo}"; A2:A7; 0))  →  ${miles(TABLA[i][4])}`;
+          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (r, c) => r === i && (c === 0 || c === 4) });
+          q("[data-explica]").textContent = "COINCIDIR encuentra la fila; INDICE trae el dato de esa fila. Funciona aunque la columna buscada esté a la derecha.";
+        }
+        if (f === "sierror") {
+          q("[data-control]").innerHTML = `Buscar el código ${selector("buscado", [...codigos, "G-09"], buscado)}`;
+          const r = TABLA.find(x => x[0] === buscado);
+          q("[data-formula]").textContent = `=SIERROR(BUSCARX("${buscado}"; A2:A7; D2:D7); "No existe")  →  ${r ? miles(r[3]) : "No existe"}`;
+          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (i, c) => r && TABLA[i][0] === buscado && (c === 0 || c === 3) });
+          q("[data-explica]").textContent = "Sin SIERROR saldría #N/D. Con SIERROR, el reporte queda limpio.";
+        }
+        if (f === "formato") {
+          q("[data-control]").textContent = "Inicio → Formato condicional → Nueva regla → Usar una fórmula";
+          q("[data-formula]").textContent = "=$D2>$E2   (relleno rosa: el gasto se pasó del presupuesto)";
+          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA, { marcar: (r, c) => TABLA[r][3] > TABLA[r][4] && c >= 3 });
+          q("[data-explica]").textContent = "La tabla se pinta sola: lo que necesita atención salta a la vista.";
         }
         if (f === "din") {
           q("[data-control]").textContent = "Resumen por categoría y obra";
           q("[data-formula]").textContent = "Insertar → Tabla dinámica  (Filas: Categoría · Columnas: Obra · Valores: Suma de Monto)";
-          const cats = [...new Set(TABLA.map(r => r[2]))], obras = ["OBR-001", "OBR-002"];
           const s = (c, o) => TABLA.filter(r => r[2] === c && r[1] === o).reduce((a, r) => a + r[3], 0);
           const filas = cats.map(c => [c, ...obras.map(o => s(c, o)), obras.reduce((a, o) => a + s(c, o), 0)]);
           filas.push(["Total", ...obras.map(o => cats.reduce((a, c) => a + s(c, o), 0)), TABLA.reduce((a, r) => a + r[3], 0)]);
           q("[data-hoja]").innerHTML = hojaExcel(["Categoría", ...obras, "Total"], filas, { letras: false, numeradas: false, marcar: (r, c) => c === 3 || r === filas.length - 1 });
           q("[data-explica]").textContent = "Seis filas se vuelven un resumen en segundos. Con miles de filas, es lo mismo.";
+        }
+        if (f === "vba") {
+          q("[data-control]").textContent = "Una macro sencilla para no repetir lo mismo cada semana";
+          q("[data-formula]").textContent = "Desarrollador → Macros → OrdenarYMarcar → Ejecutar";
+          q("[data-extra]").innerHTML = `<div class="codigo"><pre>Sub OrdenarYMarcar()
+    Range("A1:E7").Sort Key1:=Range("D1"), _
+        Order1:=xlDescending, Header:=xlYes
+    For Each celda In Range("D2:D7")
+        If celda.Value > celda.Offset(0, 1).Value Then
+            celda.Interior.Color = RGB(233, 201, 198)
+        End If
+    Next celda
+End Sub</pre><button class="ej-boton ej-boton--principal" data-vba>▶ Ejecutar</button></div>`;
+          q("[data-hoja]").innerHTML = hojaExcel(cols, TABLA);
+          q("[data-explica]").textContent = "Ordena de mayor a menor y pinta lo que se pasó, en un clic. Las macros las armo con apoyo de IA.";
+          q("[data-vba]").addEventListener("click", () => {
+            const orden = [...TABLA].sort((a, b) => b[3] - a[3]);
+            q("[data-hoja]").innerHTML = hojaExcel(cols, orden, { marcar: (r, c) => c === 3 && orden[r][3] > orden[r][4] });
+          });
         }
       }
       caja.addEventListener("click", (e) => {
@@ -295,6 +371,8 @@ const PESTANAS = {
       caja.addEventListener("change", (e) => {
         if (e.target.matches("[data-codigo]")) codigo = e.target.value;
         if (e.target.matches("[data-obra]")) obra = e.target.value;
+        if (e.target.matches("[data-cat]")) categoria = e.target.value;
+        if (e.target.matches("[data-buscado]")) buscado = e.target.value;
         mostrar();
       });
       mostrar();
@@ -522,6 +600,6 @@ function iniciarTaller() {
 }
 
 iniciarHojita();
-iniciarRed();
+iniciarTablero();
 iniciarDecision();
 iniciarTaller();

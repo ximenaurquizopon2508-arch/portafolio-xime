@@ -116,73 +116,92 @@ const fichaContenido = document.getElementById("ficha-contenido");
 const fichaContador = document.getElementById("ficha-contador");
 let casoActual = 0;
 
-// Arma el HTML de la ficha completa de un caso
+// Arma el HTML de la ficha de un caso (estructura corta)
 function crearFicha(caso) {
-  const pasos = caso.hice.map(paso => `<li>${paso}</li>`).join("");
-  const herramientas = caso.herramientas.map(h => `<span class="estado">${h}</span>`).join("");
+  const construi = caso.construi.map(t => `<li>${t}</li>`).join("");
+  const recorrido = caso.recorrido.map((paso, i) => `
+    <li class="recorrido__paso"><span>${String(i + 1).padStart(2, "0")}</span><b>${paso}</b></li>`).join("");
   const otros = caso.otrosNegocios.map(([negocio, uso]) => `
-    <div class="otros__fila"><strong>${negocio}</strong><span>${uso}</span></div>
-  `).join("");
+    <div class="otros__tarjeta"><strong>${negocio}</strong><span>${uso}</span></div>`).join("");
 
-  // Tabla "antes vs. después": solo aparece si el caso tiene "numeros"
+  // "Más a fondo": solo lo que el caso tenga
   const tablaNumeros = caso.numeros ? `
-    <section>
+    <div>
       <p class="etiqueta">Antes vs. después</p>
       <div class="numeros">
         <div class="numeros__fila numeros__cabeza"><span></span><span>Antes</span><span>Después</span></div>
         ${caso.numeros.map(([indicador, antes, despues]) => `
-          <div class="numeros__fila"><span>${indicador}</span><span class="numeros__antes">${antes}</span><b>${despues}</b></div>
-        `).join("")}
+          <div class="numeros__fila"><span>${indicador}</span><span class="numeros__antes">${antes}</span><b>${despues}</b></div>`).join("")}
       </div>
       ${caso.notaNumeros ? `<p class="numeros__nota">${caso.notaNumeros}</p>` : ""}
-    </section>` : "";
+    </div>` : "";
+  const decisiones = caso.decisiones ? `
+    <div><p class="etiqueta">Decisiones que ayudó a tomar</p>
+    <ol class="ficha__pasos">${caso.decisiones.map(d => `<li>${d}</li>`).join("")}</ol></div>` : "";
+  const ia = caso.ia ? `<div><p class="etiqueta">Cómo usé la IA</p><p>${caso.ia}</p></div>` : "";
+  const herramientas = `<div><p class="etiqueta">Herramientas</p>
+    <div class="ficha__herramientas">${caso.herramientas.map(h => `<span class="estado">${h}</span>`).join("")}</div></div>`;
 
   return `
-    <header class="ficha__cabecera">
-      <div class="tarjeta__arriba">
-        ${iconoDe(caso)}
-        <span class="etiqueta">${caso.numero} · ${caso.area}</span>
+    <header class="ficha__cabecera ficha__cabecera--dos">
+      <div>
+        <p class="etiqueta">${caso.numero} · ${caso.area}</p>
+        <h2 class="ficha__pregunta">${caso.pregunta}</h2>
+        <p class="ficha__resumen">${caso.resumen}</p>
+        <a href="#ejemplo" class="ficha__ejemplo-link">Entenderlo con un ejemplo ↓</a>
       </div>
-      <h2 class="ficha__pregunta">${caso.pregunta}</h2>
-      <p class="ficha__resumen">${caso.resumen}</p>
-      <span class="estado">${caso.estado}</span>
-      <a href="#ejemplo" class="ficha__ejemplo-link">Entenderlo con un ejemplo ↓</a>
+      <div class="ficha__sello">
+        ${iconoDe(caso)}
+        <span class="estado">${caso.estado}</span>
+      </div>
     </header>
 
-    <!-- Bloque del ejemplo visual: en el paso 4 aquí va lo interactivo -->
+    <div class="ficha__dos">
+      <section>
+        <p class="etiqueta">El problema</p>
+        <p class="ficha__frase">${caso.problema}</p>
+      </section>
+      <section>
+        <p class="etiqueta">Qué construí</p>
+        <ul class="ficha__flechas">${construi}</ul>
+      </section>
+    </div>
+
+    <section class="recorrido">
+      <p class="etiqueta">Del dato a la decisión · Así funciona el recorrido</p>
+      <ol class="recorrido__pasos">${recorrido}</ol>
+    </section>
+
+    <section class="ficha__resultado">
+      <p class="etiqueta">Resultado</p>
+      <p>${caso.resultado}</p>
+    </section>
+
     <section id="ejemplo" class="ejemplo ejemplo--${caso.fondo}">
-      <p class="etiqueta">Ejemplo</p>
+      <p class="etiqueta">Un caso para entenderlo</p>
       <div class="ejemplo__lienzo" data-lienzo>
         ${EJEMPLOS[caso.id] ? EJEMPLOS[caso.id].html() : '<p class="ej-pista">Ejemplo en preparación.</p>'}
       </div>
       <p class="ejemplo__nota">Ilustración conceptual · datos ficticios</p>
     </section>
 
-    <div class="ficha__cuerpo">
-      <section>
-        <p class="etiqueta">El problema</p>
-        <p>${caso.problema}</p>
-      </section>
-      <section>
-        <p class="etiqueta">Lo que hice</p>
-        <ol class="ficha__pasos">${pasos}</ol>
-      </section>
-      <section>
-        <p class="etiqueta">El resultado</p>
-        <p>${caso.resultado}</p>
-      </section>
-      ${tablaNumeros}
-      ${caso.decisiones ? `<section><p class="etiqueta">Decisiones que ayudó a tomar</p><ol class="ficha__pasos">${caso.decisiones.map(d => `<li>${d}</li>`).join("")}</ol></section>` : ""}
-      ${caso.ia ? `<section><p class="etiqueta">Cómo usé la IA</p><p>${caso.ia}</p></section>` : ""}
-      <section>
-        <p class="etiqueta">Herramientas</p>
-        <div class="ficha__herramientas">${herramientas}</div>
-      </section>
-      <section>
-        <p class="etiqueta">La misma lógica, en otros negocios</p>
-        <div class="otros">${otros}</div>
-      </section>
-    </div>
+    <section>
+      <p class="etiqueta">La misma lógica, otros negocios</p>
+      <div class="otros otros--tarjetas">${otros}</div>
+    </section>
+
+    <details class="afondo">
+      <summary>Más a fondo <span>+</span></summary>
+      <div class="afondo__cuerpo">${herramientas}${ia}${tablaNumeros}${decisiones}</div>
+    </details>
+
+    <footer class="ficha__cierre">
+      <p>¿Tu equipo enfrenta algo parecido?</p>
+      <div>
+        <a class="boton boton--lleno" href="#contacto" data-accion="cerrar">Conversemos</a>
+        <button class="boton" data-accion="siguiente">Explorar otro caso →</button>
+      </div>
+    </footer>
   `;
 }
 

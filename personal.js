@@ -48,7 +48,7 @@ const EXPERIENCIA = [
     empresa: "Grupo UP · Construcción",
     frase: "Desarrollé un sistema financiero con IA y presento a gerencia el margen e impuestos por proyecto.",
     aptitudes: ["Finanzas", "IA vía API", "Google Sheets", "Dashboards"] },
-  { fecha: "Sep 2026 – actualidad", corto: "Endore", cargo: "Administradora",
+  { fecha: "Sep 2026 – actualidad", corto: "Endore", cargo: "Administradora y Analista de Gestión",
     empresa: "Centro Médico Endore · Salud",
     frase: "Doy soporte directo a gerencia: indicadores de cierre, precios, conciliaciones y análisis de datos.",
     aptitudes: ["Control de gestión", "Apps Script", "Python", "Precios"] }

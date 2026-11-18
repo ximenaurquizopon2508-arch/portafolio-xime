@@ -53,32 +53,6 @@ function crearDestacado(caso) {
     </article>`;
 }
 
-// 2) Pintar TODOS los casos en la sección "Casos", con filtros
-const lista = document.getElementById("lista-casos");
-lista.innerHTML = CASOS.map(crearTarjeta).join("");
-
-const filtros = document.getElementById("filtros-casos");
-const categorias = ["todo", ...new Set(CASOS.map(c => c.categoria))];
-filtros.innerHTML = categorias.map(cat =>
-  `<button class="filtro ${cat === "todo" ? "activo" : ""}" data-filtro="${cat}">${cat === "todo" ? "Todo" : NOMBRE_CATEGORIA[cat]}</button>`).join("");
-
-function filtrar(cat) {
-  let visibles = 0;
-  lista.querySelectorAll(".tarjeta").forEach(t => {
-    const ver = cat === "todo" || t.dataset.categoria === cat;
-    t.hidden = !ver;
-    if (ver) visibles++;
-  });
-  filtros.querySelectorAll("[data-filtro]").forEach(b => b.classList.toggle("activo", b.dataset.filtro === cat));
-  document.getElementById("contador-casos").textContent = `${String(visibles).padStart(2, "0")} / ${String(CASOS.length).padStart(2, "0")} preguntas`;
-}
-filtros.addEventListener("click", (e) => { if (e.target.dataset.filtro) filtrar(e.target.dataset.filtro); });
-filtrar("todo");
-
-// 3) Pintar SOLO los destacados en la portada
-const destacados = document.getElementById("destacados");
-destacados.innerHTML = CASOS.filter(caso => caso.destacado).map(crearDestacado).join("");
-
 // 3b) Estampitas: crear cada dibujo en su lugar (datos en personal.js)
 const capaEstampitas = document.getElementById("estampitas");
 capaEstampitas.innerHTML = ESTAMPITAS.map(e => `
@@ -206,7 +180,8 @@ function crearFicha(caso) {
 }
 
 // Abre la ficha del caso número "indice"
-function abrirFicha(indice) {
+function abrirFicha(indice, origen) {
+  const yaAbierta = !ficha.hidden;
   // si te pasas del último, vuelve al primero (y al revés)
   casoActual = (indice + CASOS.length) % CASOS.length;
   const caso = CASOS[casoActual];
@@ -220,6 +195,14 @@ function abrirFicha(indice) {
   fichaContador.textContent = `${casoActual + 1} / ${CASOS.length}`;
   ficha.hidden = false;
   ficha.scrollTop = 0;
+  // la ficha "crece" desde la foto que tocaste hasta llenar la pantalla
+  if (origen && !yaAbierta && !movimientoReducido && ficha.animate) {
+    const r = origen.getBoundingClientRect(), w = innerWidth, h = innerHeight;
+    ficha.animate([
+      { clipPath: `inset(${r.top}px ${w - r.right}px ${h - r.bottom}px ${r.left}px round 6px)`, opacity: .6 },
+      { clipPath: "inset(0px 0px 0px 0px round 0px)", opacity: 1 }
+    ], { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" });
+  }
   document.body.classList.add("sin-scroll");      // la página de atrás no se mueve
   history.replaceState(null, "", `#caso-${caso.numero}`); // link directo al caso
 }
@@ -232,14 +215,14 @@ function cerrarFicha() {
 
 // Clic en cualquier tarjeta (de la portada o de la grilla) → abre su ficha
 document.addEventListener("click", (evento) => {
-  const tarjeta = evento.target.closest(".tarjeta");
-  if (tarjeta) abrirFicha(Number(tarjeta.dataset.indice));
+  const tarjeta = evento.target.closest(".tarjeta, .polaroid");
+  if (tarjeta) abrirFicha(Number(tarjeta.dataset.indice), tarjeta);
 });
 
 // Enter sobre una tarjeta (para quien navega con teclado)
 document.addEventListener("keydown", (evento) => {
-  const tarjeta = evento.target.closest?.(".tarjeta");
-  if (tarjeta && evento.key === "Enter") abrirFicha(Number(tarjeta.dataset.indice));
+  const tarjeta = evento.target.closest?.(".tarjeta, .polaroid");
+  if (tarjeta && evento.key === "Enter") abrirFicha(Number(tarjeta.dataset.indice), tarjeta);
 });
 
 // Botones de la ficha: volver, anterior, siguiente
@@ -271,21 +254,153 @@ if (casoEnLink) {
   if (indice >= 0) abrirFicha(indice);
 }
 
-// 3e) Experiencia: cada trabajo muestra sus casos como botones
-document.querySelectorAll("[data-casos]").forEach(caja => {
-  caja.innerHTML = caja.dataset.casos.split(",").map(id => {
-    const indice = CASOS.findIndex(c => c.id === id.trim());
-    if (indice < 0) return "";                      // si borras un caso, su botón desaparece solo
-    const caso = CASOS[indice];
-    return `<button class="chip-caso" data-abrir="${indice}">
-              <span class="oro">${caso.numero}</span> ${caso.pregunta}</button>`;
-  }).join("");
-});
 document.addEventListener("click", (e) => {
   const boton = e.target.closest("[data-abrir]");
-  if (boton) abrirFicha(Number(boton.dataset.abrir));
+  if (boton) abrirFicha(Number(boton.dataset.abrir), boton);
   const porId = e.target.closest("[data-abrir-id]");
   if (porId) abrirFicha(CASOS.findIndex(c => c.id === porId.dataset.abrirId));
+});
+
+// ================= 3f) CASOS: TABLERO DE POLAROIDS =================
+// Cada polaroid va unida con un hilo a su tema (los "nudos" del centro).
+// Tocar un nudo = filtrar. Tocar una foto = abrir el caso.
+const NUDOS = { todo: "Todos", fin: "Finanzas", ope: "Operaciones y procesos", dat: "Datos y clientes" };
+
+// Mini gráfico de cada polaroid (el tipo se elige en casos.js → visual)
+function miniVisual(tipo) {
+  const b = (alturas, marca) => alturas.map((h, i) => `<i style="height:${h}%" class="${i === marca ? "fuerte" : ""}"></i>`).join("");
+  const v = {
+    semaforo:   `<div class="mv-sem"><i class="ok"></i><i class="ok"></i><i class="alerta"></i><i class="mal"></i></div>`,
+    barras:     `<div class="mv-barras">${b([55, 80, 40, 95, 70], 3)}</div>`,
+    alerta:     `<div class="mv-barras">${b([70, 72, 68, 30, 71], 3)}</div><span class="mv-chip">¡no cuadra!</span>`,
+    cohortes:   `<div class="mv-heat">${[100, 64, 41, 33, 28, 100, 58, 39, 30, 100, 61, 44].map(p => `<i style="opacity:${p / 100}"></i>`).join("")}</div>`,
+    ranking:    `<div class="mv-rank">${[90, 72, 55, 38].map((w, i) => `<i style="width:${w}%" class="${i === 0 ? "fuerte" : ""}"></i>`).join("")}</div>`,
+    margen:     `<div class="mv-margen"><i style="flex:62"></i><i style="flex:15" class="igv"></i><i style="flex:3" class="com"></i><i style="flex:20" class="fuerte"></i></div>`,
+    cruce:      `<div class="mv-cruce"><div><i></i><i></i><i></i></div><span>↔</span><div><i></i><i class="fuerte"></i><i></i></div></div>`,
+    calendario: `<div class="mv-cal">${Array.from({ length: 14 }, (_, i) => `<i class="${i === 9 ? "fuerte" : ""}"></i>`).join("")}</div>`,
+    flujo:      `<div class="mv-flujo"><i></i><span>→</span><i></i><span>→</span><i class="fuerte"></i></div>`
+  };
+  return v[tipo] || v.barras;
+}
+
+const tablero = document.getElementById("tablero-casos");
+let verTodos = false, temaActual = "todo";
+
+function pintarTablero() {
+  // casos del tablero: primero los marcados 1..6, luego el resto si "ver todos"
+  const orden = CASOS.map((c, i) => ({ c, i }))
+    .filter(({ c }) => verTodos || c.tablero > 0)
+    .sort((a, b) => (a.c.tablero || 99) - (b.c.tablero || 99) || a.i - b.i);
+  const mitad = Math.ceil(orden.length / 2);
+  const giros = [-2.5, 1.8, -1.2, 2.4, -1.8, 1.2, -2, 2.2, -1, 1.6];
+  const foto = ({ c, i }, k) => `
+    <article class="polaroid" data-indice="${i}" data-grupo="${c.grupo}" tabindex="0" role="button" style="--giro:${giros[k % giros.length]}deg">
+      <span class="polaroid__pin" aria-hidden="true"></span>
+      <div class="polaroid__foto">${miniVisual(c.visual)}</div>
+      <h3 class="polaroid__pregunta">${c.pregunta}</h3>
+      <p class="polaroid__pie">${c.rubro === "Proyecto personal" ? "Proyecto personal" : "Caso real · " + c.rubro}</p>
+    </article>`;
+  tablero.innerHTML = `
+    <svg class="tablerocasos__hilos" aria-hidden="true"></svg>
+    <div class="tablerocasos__fila">${orden.slice(0, mitad).map((o, k) => foto(o, k)).join("")}</div>
+    <div class="tablerocasos__nudos">${Object.entries(NUDOS).map(([k, n]) =>
+      `<button class="nudo ${k === temaActual ? "activo" : ""}" data-nudo="${k}">${n}</button>`).join("")}</div>
+    <div class="tablerocasos__fila">${orden.slice(mitad).map((o, k) => foto(o, k + mitad)).join("")}</div>`;
+  aplicarTema();
+}
+
+function aplicarTema() {
+  tablero.querySelectorAll(".nudo").forEach(n => n.classList.toggle("activo", n.dataset.nudo === temaActual));
+  tablero.querySelectorAll(".polaroid").forEach(p => p.classList.toggle("apagada", temaActual !== "todo" && p.dataset.grupo !== temaActual));
+  dibujarHilos();
+}
+
+// Hilos: curvas punteadas de cada polaroid a su nudo
+function dibujarHilos(resaltar) {
+  const svg = tablero.querySelector(".tablerocasos__hilos");
+  if (!svg) return;
+  const caja = tablero.getBoundingClientRect();
+  svg.setAttribute("viewBox", `0 0 ${caja.width} ${caja.height}`);
+  if (window.innerWidth < 760) { svg.innerHTML = ""; return; }   // en celular no hay hilos
+  svg.innerHTML = [...tablero.querySelectorAll(".polaroid")].map(p => {
+    const nudo = tablero.querySelector(`[data-nudo="${p.dataset.grupo}"]`);
+    const a = p.getBoundingClientRect(), n = nudo.getBoundingClientRect();
+    const arriba = a.top < n.top;
+    const x1 = a.left + a.width / 2 - caja.left, y1 = (arriba ? a.bottom : a.top) - caja.top;
+    const x2 = n.left + n.width / 2 - caja.left, y2 = (arriba ? n.top : n.bottom) - caja.top;
+    const fuerte = temaActual === p.dataset.grupo || resaltar === p;
+    const apagado = temaActual !== "todo" && temaActual !== p.dataset.grupo;
+    return `<path d="M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}"
+      class="hilo ${fuerte ? "hilo--fuerte" : ""} ${apagado ? "hilo--apagado" : ""}"/>`;
+  }).join("");
+}
+
+tablero.addEventListener("click", (e) => {
+  const nudo = e.target.closest("[data-nudo]");
+  if (nudo) { temaActual = nudo.dataset.nudo; aplicarTema(); }
+});
+tablero.addEventListener("mouseover", (e) => {
+  const p = e.target.closest(".polaroid");
+  if (p) dibujarHilos(p);
+});
+tablero.addEventListener("mouseleave", () => dibujarHilos());
+document.getElementById("ver-todos").addEventListener("click", (e) => {
+  verTodos = !verTodos;
+  e.currentTarget.textContent = verTodos ? "Ver menos ↑" : "Ver los 10 casos ↓";
+  pintarTablero();
+});
+window.addEventListener("resize", () => dibujarHilos());
+pintarTablero();
+window.addEventListener("load", () => dibujarHilos());   // cuando cargan las letras, se recalculan
+
+// ================= 3g) EXPERIENCIA: LÍNEA DE TIEMPO =================
+const linea = document.getElementById("linea-tiempo");
+linea.innerHTML = `
+  <ol class="lineatiempo__puntos">${EXPERIENCIA.map((x, i) => `
+    <li><button class="lineatiempo__punto ${i === EXPERIENCIA.length - 1 ? "activo" : ""}" data-exp="${i}">
+      <span class="lineatiempo__bola" aria-hidden="true"></span>
+      <b>${x.corto}</b><small>${x.fecha}</small></button></li>`).join("")}</ol>
+  <div class="lineatiempo__detalle" data-detalle></div>`;
+function mostrarExperiencia(i) {
+  const x = EXPERIENCIA[i];
+  linea.querySelectorAll("[data-exp]").forEach(b => b.classList.toggle("activo", Number(b.dataset.exp) === i));
+  linea.querySelector("[data-detalle]").innerHTML = `
+    <p class="etiqueta">${x.fecha} · ${x.empresa}</p>
+    <h3>${x.cargo}</h3>
+    <p>${x.frase}</p>
+    <div class="lineatiempo__casos">${x.casos.map(id => {
+      const k = CASOS.findIndex(c => c.id === id);
+      return k < 0 ? "" : `<button class="chip-caso" data-abrir="${k}"><span class="oro">${CASOS[k].numero}</span> ${CASOS[k].pregunta}</button>`;
+    }).join("")}</div>`;
+}
+linea.addEventListener("click", (e) => { const b = e.target.closest("[data-exp]"); if (b) mostrarExperiencia(Number(b.dataset.exp)); });
+mostrarExperiencia(EXPERIENCIA.length - 1);
+
+// ================= 3h) CERTIFICADOS + VISTA PREVIA =================
+document.getElementById("certificados-lista").innerHTML = CERTIFICADOS.map((c, i) => `
+  <button class="cert" data-cert="${i}" style="--giro:${[-1.5, 1, -0.5, 1.5, -1][i % 5]}deg">
+    <span class="cert__img"><img src="${c.img}" alt="" loading="lazy"></span>
+    <b>${c.nombre}</b><small>${c.entidad}</small>
+    ${c.nota ? `<span class="cert__nota">${c.nota}</span>` : ""}
+  </button>`).join("");
+const visor = document.getElementById("visor");
+document.addEventListener("click", (e) => {
+  const c = e.target.closest("[data-cert]");
+  if (c) {
+    const cert = CERTIFICADOS[Number(c.dataset.cert)];
+    document.getElementById("visor-img").src = cert.img;
+    document.getElementById("visor-img").alt = "Certificado: " + cert.nombre;
+    document.getElementById("visor-txt").textContent = `${cert.nombre} · ${cert.entidad}`;
+    visor.hidden = false;
+    document.body.classList.add("sin-scroll");
+  }
+  if (e.target.matches("[data-cerrar-visor]") || e.target === visor) {
+    visor.hidden = true;
+    document.body.classList.remove("sin-scroll");
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !visor.hidden) { visor.hidden = true; document.body.classList.remove("sin-scroll"); }
 });
 
 // 4) Animación suave: cuando un elemento con clase "aparecer"

@@ -199,8 +199,7 @@ function iniciarTablero() {
 
 
 // ======================= 4) DECISIÓN: IGV DE BOLSILLO =======================
-function iniciarDecision() {
-  const caja = document.getElementById("decision-igv");
+function iniciarDecision(caja) {
   const facturado = 120000, gastoTotal = 52000;     // obra ficticia, montos con IGV
   caja.innerHTML = `
     <div class="decision__cabeza"><span>Gasto con factura</span><b data-pct></b></div>
@@ -579,27 +578,41 @@ def super_limpieza_adn(texto):
       });
       vistas.retencion();
     }
+  },
+  // ---------- Finanzas: IGV de bolsillo ----------
+  finanzas: {
+    nombre: "Finanzas · IGV",
+    iniciar(caja) {
+      caja.innerHTML = `
+        <p class="lab__explica">¿Cuánto IGV pagas de tu bolsillo? Mueve cuánto del gasto de un proyecto tiene factura. Proyecto ficticio, la misma lógica de mi dashboard de obras.</p>
+        <div class="decision__caja" data-igv></div>`;
+      iniciarDecision(caja.querySelector("[data-igv]"));
+    }
   }
 };
 
 function iniciarTaller() {
   const taller = document.getElementById("taller");
   taller.innerHTML = `
-    <div class="taller__pestanas" role="tablist">${Object.entries(PESTANAS).map(([k, p], i) =>
-      `<button role="tab" class="taller__pestana ${i === 0 ? "activo" : ""}" data-tab="${k}">${p.nombre}</button>`).join("")}</div>
-    <div class="taller__panel" data-panel></div>`;
+    <div class="taller__pestanas" role="tablist">${Object.entries(PESTANAS).map(([k, p]) =>
+      `<button role="tab" class="taller__pestana" data-tab="${k}" aria-expanded="false">${p.nombre}</button>`).join("")}</div>
+    <div class="taller__panel" data-panel hidden></div>`;
+  let abierta = null;
   function abrir(k) {
-    taller.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("activo", b.dataset.tab === k));
     const panel = taller.querySelector("[data-panel]");
     const nuevo = panel.cloneNode(false);          // panel limpio, sin eventos de la pestaña anterior
     panel.replaceWith(nuevo);
-    PESTANAS[k].iniciar(nuevo);
+    abierta = abierta === k ? null : k;            // tocar la misma la cierra
+    taller.querySelectorAll("[data-tab]").forEach(b => {
+      b.classList.toggle("activo", b.dataset.tab === abierta);
+      b.setAttribute("aria-expanded", b.dataset.tab === abierta);
+    });
+    taller.classList.toggle("abierto", !!abierta);
+    nuevo.hidden = !abierta;
+    if (abierta) PESTANAS[abierta].iniciar(nuevo);
   }
   taller.querySelector(".taller__pestanas").addEventListener("click", (e) => { if (e.target.dataset.tab) abrir(e.target.dataset.tab); });
-  abrir("excel");
 }
 
 iniciarHojita();
-iniciarTablero();
-iniciarDecision();
 iniciarTaller();

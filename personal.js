@@ -29,3 +29,42 @@ const FOTOS = [
   // "mancora.jpg",
   // "punta-cana.jpg",
 ];
+
+/*
+  EXPERIENCIA: cada punto de la línea de tiempo (del más antiguo al más reciente).
+    casos → los id de casos.js que hiciste ahí (salen como botones)
+*/
+const EXPERIENCIA = [
+  { fecha: "Ago 2025 – Ene 2026", corto: "Grupo UP", cargo: "Practicante Pre Profesional · Gerencia General",
+    empresa: "Grupo UP · Construcción",
+    frase: "Instauré el primer control de inventario de la empresa y automaticé el registro de gastos.",
+    casos: ["kardex", "procesos"] },
+  { fecha: "Feb 2026 – Ago 2026", corto: "Caja Trujillo", cargo: "Practicante Profesional · Experiencia del Colaborador",
+    empresa: "Caja Trujillo · Financiero",
+    frase: "Dos dashboards de clima en Power BI antes de Great Place to Work: 106 agencias y +2,500 colaboradores.",
+    casos: ["clima"] },
+  { fecha: "Ago 2026 – actualidad", corto: "Grupo UP", cargo: "Soporte Financiero y de Sistemas (freelance)",
+    empresa: "Grupo UP · Construcción",
+    frase: "Sistema financiero con IA y un dashboard por proyecto que presento al gerente y al socio.",
+    casos: ["gastos-obra", "tdr"] },
+  { fecha: "Sep 2026 – actualidad", corto: "Endore", cargo: "Administradora",
+    empresa: "Centro Médico Endore · Salud",
+    frase: "Soporte directo a gerencia: indicadores de cierre, precios, conciliaciones y análisis de pacientes.",
+    casos: ["financiero-endore", "retencion", "precios", "conciliacion"] }
+];
+
+/*
+  CERTIFICADOS: imagen (en la misma carpeta) + nombre + quién lo da.
+    nota → solo si quieres mostrarla (déjala vacía "" si no)
+*/
+const CERTIFICADOS = [
+  { img: "cert-analista-datos.jpg", nombre: "Analista de Datos · SQL, Power BI y Python", entidad: "WE Educación Ejecutiva · 90 h · 2026", nota: "" },
+  { img: "cert-sql.jpg",            nombre: "SQL Server for Analytics",            entidad: "WE Educación Ejecutiva · 30 h · 2026", nota: "" },
+  { img: "cert-python.jpg",         nombre: "Python: Análisis de Datos",           entidad: "WE Educación Ejecutiva · 30 h · 2026", nota: "" },
+  { img: "cert-powerbi-cip.jpg",    nombre: "Power Pivot y Power BI",              entidad: "Colegio de Ingenieros del Perú · 30 h · 2025", nota: "Nota 19" },
+  { img: "cert-powerbi-upc.jpg",    nombre: "Análisis de Datos con Power BI",      entidad: "Becas Grupo Romero · UPC", nota: "" },
+  { img: "cert-upn-proyectos.jpg",  nombre: "Formulador y Evaluador de Proyectos", entidad: "UPN · Certificación por competencias · 2026", nota: "" },
+  { img: "cert-upn-gestion.jpg",    nombre: "Analista de Sistemas Integrados de Gestión", entidad: "UPN · Certificación por competencias · 2026", nota: "" },
+  { img: "cert-estrategia.jpg",     nombre: "Estrategia Empresarial",              entidad: "Universidad Austral / IAE · Coursera · 2025", nota: "" },
+  { img: "cert-administracion.jpg", nombre: "Administración para obtener resultados", entidad: "UNAM · Coursera · 2025", nota: "" }
+];

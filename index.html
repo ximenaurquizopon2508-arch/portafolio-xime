@@ -35,6 +35,7 @@
       <a href="#casos">Casos</a>
       <a href="#herramientas" class="solo-desk">Herramientas</a>
       <a href="#experiencia" class="solo-desk">Experiencia</a>
+      <a href="#certificados" class="solo-desk">Formación</a>
       <a href="#contacto">Contacto</a>
     </nav>
   </header>
@@ -50,16 +51,11 @@
         <p class="etiqueta"><span class="punto"></span>Ximena Urquizo · Analista de datos · Finanzas · Control de gestión</p>
         <h1 class="portada__titulo">Soy <em>Ximena</em><span class="oro">.</span></h1>
         <p class="portada__frase">Analizo los datos, estructuro la solución y la construyo con&nbsp;<em>IA</em>.</p>
-        <p class="portada__nota">Casos reales, con datos ficticios. Ingeniera industrial · Especialización en análisis de datos.</p>
-
-        <!-- JavaScript pone aquí los 2 casos destacados -->
-        <div id="destacados" class="destacados"></div>
 
         <div class="portada__botones">
-          <a href="#contacto" class="boton boton--lleno">Conversemos ↗</a>
-          <a href="#casos" class="boton">Ver casos ↘</a>
+          <a href="#casos" class="boton boton--lleno">Ver casos ↘</a>
+          <a href="#contacto" class="boton">Conversemos ↗</a>
         </div>
-        <p class="portada__contacto">WhatsApp +51 940 138 547 · ximenaurquizopon2508@gmail.com</p>
       </div>
 
       <!-- Columna derecha: la hojita que se ordena sola (interactivos.js) -->
@@ -73,148 +69,53 @@
       </div>
     </section>
 
-    <!-- Tira: mi forma de trabajar + números -->
-    <section class="metodo seccion--ancha" aria-label="Mi forma de trabajar">
-      <div class="metodo__pasos">
-        <div class="metodo__paso aparecer"><span class="metodo__num">01</span><div><b>Analizo</b><p>Los datos, para entender el problema de verdad.</p></div></div>
-        <div class="metodo__paso aparecer"><span class="metodo__num">02</span><div><b>Estructuro</b><p>La solución: qué medir, qué mejorar y quién la va a usar.</p></div></div>
-        <div class="metodo__paso aparecer"><span class="metodo__num">03</span><div><b>Construyo con IA</b><p>La herramienta, y valido que funcione y cuadre.</p></div></div>
-      </div>
-    </section>
-
-    <!-- ===== 2. TABLERO: casos y herramientas unidos con hilo (interactivos.js) ===== -->
-    <section id="tablero-seccion" class="seccion">
-      <div class="seccion__cabeza">
-        <div>
-          <p class="etiqueta">Mi trabajo, en un tablero</p>
-          <h2 class="seccion__titulo">Todo está <em>conectado</em>.</h2>
-        </div>
-        <p class="seccion__intro">Toca una herramienta para ver en qué casos la usé. Toca una foto para abrir el caso.</p>
-      </div>
-      <div id="tablero" class="tablero"></div>
-      <p id="tablero-nota" class="tablero__nota">Pasa el mouse por una foto o una herramienta.</p>
-    </section>
-
-    <!-- ===== 3. CASOS ===== -->
-    <section id="casos" class="seccion">
-      <div class="seccion__cabeza">
-        <div>
-          <p class="etiqueta">Trabajo seleccionado</p>
-          <h2 class="seccion__titulo">¿Qué necesita <em>decidir</em> tu equipo?</h2>
-        </div>
-        <p class="seccion__intro">Cada caso empieza con una pregunta de negocio. Ábrela para ver qué hice y probar un ejemplo con datos ficticios.</p>
-      </div>
-      <div class="casos__barra">
-        <div id="filtros-casos" class="casos__filtros"></div>
-        <span id="contador-casos" class="etiqueta"></span>
-      </div>
-      <div id="lista-casos" class="grilla-casos"></div>
-    </section>
-
-    <!-- ===== 4. UNA DECISIÓN QUE PUEDES PROBAR ===== -->
-    <section id="decision" class="seccion">
-      <div class="decision">
-        <div class="decision__texto">
-          <p class="etiqueta">Una decisión que puedes probar</p>
-          <h2 class="seccion__titulo">¿Cuánto IGV pagas <em>de tu bolsillo</em>?</h2>
-          <p>Cada gasto sin factura es crédito fiscal que se pierde. Mueve cuánto del gasto de una obra tiene factura y mira cuánto IGV queda por pagar.</p>
-          <p class="decision__nota">Obra ficticia. La misma lógica de mi dashboard de obras.</p>
-        </div>
-        <div id="decision-igv" class="decision__caja"></div>
-      </div>
-    </section>
-
-    <!-- ===== 5. SECCIÓN OSCURA: DATAMATCH ===== -->
-    <section class="oscura">
-      <div class="oscura__dentro">
-        <div>
-          <p class="etiqueta">Herramientas hechas por mí</p>
-          <h2 class="seccion__titulo">También construyo <em>mis herramientas</em>.</h2>
-          <p class="oscura__intro">Cuando una tarea se repite, la convierto en una herramienta. Esta es mi app personal en Python.</p>
-        </div>
-        <div class="app">
-          <img src="datamatch.png" alt="Ícono de DataMatch: un conejito con flechas" class="app__icono">
-          <div>
-            <h3>DataMatch</h3>
-            <p class="app__sub">Cruza dos Excel sin fórmulas, aunque los nombres no estén escritos igual.</p>
-            <ul class="app__lista">
-              <li>Encuentra sola la fila de encabezados</li>
-              <li>Limpia nombres: tildes, comas, mayúsculas y orden</li>
-              <li>Amarillo si se parece · rojo si no lo encuentra</li>
-            </ul>
-            <button class="boton boton--claro" data-abrir-id="datamatch">Ver el caso y probarlo →</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 6. HERRAMIENTAS ===== -->
+    <!-- ===== 2. CON QUÉ TRABAJO: toca una herramienta y se despliega (interactivos.js) ===== -->
     <section id="herramientas" class="seccion">
       <div class="seccion__cabeza">
         <div>
           <p class="etiqueta">Herramientas</p>
           <h2 class="seccion__titulo">Con qué <em>trabajo</em>.</h2>
         </div>
-        <p class="seccion__intro">No solo te lo digo: pruébalo. Cada pestaña es un ejemplo con datos ficticios.</p>
+        <p class="seccion__intro">Toca una y pruébala. Datos ficticios.</p>
       </div>
       <div id="taller" class="taller"></div>
-
-      <div class="herramientas">
-        <div><h3>Excel y Power Query</h3><ul><li>Excel avanzado</li><li>BUSCARV / BUSCARX</li><li>SI (con Y / O)</li><li>SUMAR.SI.CONJUNTO</li><li>CONTAR.SI.CONJUNTO</li><li>INDICE + COINCIDIR</li><li>SIERROR</li><li>Tablas dinámicas</li><li>Formato condicional</li><li>Validación de datos</li><li>Macros VBA (básico)</li><li>Power Query (Excel y Power BI)</li></ul></div>
-        <div><h3>BI y datos</h3><ul><li>Power BI</li><li>DAX</li><li>Modelado de datos</li><li>Google Sheets</li><li>SQL (básico)</li><li>Python: análisis de datos con pandas</li><li>Streamlit</li><li>Jupyter Notebook</li></ul></div>
-        <div><h3>Automatización e IA</h3><ul><li>n8n</li><li>Integración de IA vía API (Gemini)</li><li>Extracción de datos con IA (OCR)</li><li>Desarrollo asistido por IA</li><li>Prompt engineering</li><li>Google Apps Script</li><li>HTML y JavaScript</li></ul></div>
-        <div><h3>Finanzas y procesos</h3><ul><li>Flujo de caja</li><li>EBITDA y EBIT</li><li>IGV y detracciones</li><li>Conciliaciones</li><li>Costos y precios</li><li>KPI</li><li>Mapeo de procesos</li><li>Manuales y checklists</li></ul></div>
-      </div>
     </section>
 
-    <!-- ===== 7. EXPERIENCIA Y FORMACIÓN ===== -->
+    <!-- ===== 3. CASOS: tablero de polaroids unidas a sus temas (interactivos.js) ===== -->
+    <section id="casos" class="seccion">
+      <div class="seccion__cabeza">
+        <div>
+          <p class="etiqueta">Casos reales · datos ficticios</p>
+          <h2 class="seccion__titulo">¿Te suena <em>alguna</em>?</h2>
+        </div>
+        <p class="seccion__intro">Toca un tema para filtrar. Toca una foto para abrir el caso.</p>
+      </div>
+      <div id="tablero-casos" class="tablerocasos"></div>
+      <div class="tablerocasos__mas"><button id="ver-todos" class="boton">Ver los 10 casos ↓</button></div>
+    </section>
+
+    <!-- ===== 4. EXPERIENCIA: línea de tiempo (datos en personal.js) ===== -->
     <section id="experiencia" class="seccion">
       <div class="seccion__cabeza">
         <div>
           <p class="etiqueta">Experiencia</p>
           <h2 class="seccion__titulo">Dónde lo he <em>aplicado</em>.</h2>
         </div>
+        <p class="seccion__intro">Toca un punto.</p>
       </div>
-      <div class="exp-grid">
-        <!-- data-casos: los id de los casos de ese trabajo (ver casos.js) -->
-        <ol class="experiencia">
-          <li>
-            <span class="experiencia__fecha">oct 2026 — actualidad</span>
-            <h3>Administradora · Endore</h3>
-            <p>Clínica de endocrinología. Trabajo de la mano con la gerencia: finanzas, farmacia, convenios y análisis de datos.</p>
-            <div class="experiencia__casos" data-casos="retencion,financiero-endore,conciliacion,precios"></div>
-          </li>
-          <li>
-            <span class="experiencia__fecha">ago 2025 — actualidad</span>
-            <h3>Grupo UP · Construcción</h3>
-            <p>Soporte Financiero y de Sistemas (freelance, desde ago 2026). Antes, Practicante Pre Profesional en Gerencia General.</p>
-            <div class="experiencia__casos" data-casos="gastos-obra,kardex,tdr,procesos"></div>
-          </li>
-          <li>
-            <span class="experiencia__fecha">feb 2026 — ago 2026</span>
-            <h3>Practicante profesional, Experiencia del Colaborador · Caja Trujillo</h3>
-            <p>Dashboards y bases de datos de clima laboral para la certificación Great Place to Work.</p>
-            <div class="experiencia__casos" data-casos="clima"></div>
-          </li>
-          <li>
-            <span class="experiencia__fecha">Proyecto personal</span>
-            <h3>DataMatch · App en Python</h3>
-            <p>Cruce de bases de Excel con nombres escritos distinto.</p>
-            <div class="experiencia__casos" data-casos="datamatch"></div>
-          </li>
-        </ol>
+      <div id="linea-tiempo" class="lineatiempo"></div>
+    </section>
 
-        <aside class="formacion">
-          <p class="etiqueta">Formación y certificaciones</p>
-          <ul>
-            <li><b>Bachiller en Ingeniería Industrial</b><span>Universidad Privada del Norte (UPN) · 2021 – 2025</span></li>
-            <li><b>Especialización en Análisis de Datos</b><span>WE Educación Ejecutiva · 2026 · Power BI, SQL Server for Analytics y Python: Análisis de Datos (30 h c/u)</span></li>
-            <li><b>Especialización en Power Pivot y Power BI</b><span>Colegio de Ingenieros del Perú · 30 h · nota 19</span></li>
-            <li><b>Análisis de Datos con Power BI</b><span>Becas Grupo Romero / UPC</span></li>
-            <li><b>Inglés B2 certificado</b><span>WeTalkUPC</span></li>
-          </ul>
-        </aside>
+    <!-- ===== 5. CERTIFICADOS (datos en personal.js) ===== -->
+    <section id="certificados" class="seccion">
+      <div class="seccion__cabeza">
+        <div>
+          <p class="etiqueta">Formación</p>
+          <h2 class="seccion__titulo">Lo que <em>estudié</em>.</h2>
+        </div>
+        <p class="seccion__intro">Bachiller en Ingeniería Industrial (UPN) · Inglés B2. Toca un certificado para verlo.</p>
       </div>
+      <div id="certificados-lista" class="certs"></div>
     </section>
 
   </main>
@@ -241,6 +142,12 @@
       </div>
     </div>
     <article id="ficha-contenido" class="ficha__contenido"></article>
+  </div>
+
+  <!-- VISTA PREVIA DE CERTIFICADO -->
+  <div id="visor" class="visor" hidden>
+    <button class="visor__cerrar" data-cerrar-visor aria-label="Cerrar">×</button>
+    <figure><img id="visor-img" alt=""><figcaption id="visor-txt"></figcaption></figure>
   </div>
 
   <!-- Primero los DATOS, después la LÓGICA que los usa -->

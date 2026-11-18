@@ -53,6 +53,15 @@ function crearDestacado(caso) {
     </article>`;
 }
 
+// 3) Los 2 casos destacados de la portada (portada: true en casos.js)
+document.getElementById("destacados").innerHTML = CASOS.filter(c => c.portada).map(caso => `
+  <article class="tarjeta tarjeta--destacada" data-indice="${CASOS.indexOf(caso)}" tabindex="0" role="button">
+    <p class="etiqueta">${caso.area.split(" · ")[0]}</p>
+    <h3 class="tarjeta__pregunta">${caso.pregunta}</h3>
+    <p class="tarjeta__resumen">${caso.beneficio}</p>
+    <span class="tarjeta__flecha" aria-hidden="true">↗</span>
+  </article>`).join("");
+
 // 3b) Estampitas: crear cada dibujo en su lugar (datos en personal.js)
 const capaEstampitas = document.getElementById("estampitas");
 capaEstampitas.innerHTML = ESTAMPITAS.map(e => `
@@ -152,7 +161,7 @@ function crearFicha(caso) {
     </section>
 
     <section id="ejemplo" class="ejemplo ejemplo--${caso.fondo}">
-      <p class="etiqueta">Un caso para entenderlo</p>
+      <p class="etiqueta">Un caso para entenderlo · ejemplo ficticio: ${caso.contexto}</p>
       <div class="ejemplo__lienzo" data-lienzo>
         ${EJEMPLOS[caso.id] ? EJEMPLOS[caso.id].html() : '<p class="ej-pista">Ejemplo en preparación.</p>'}
       </div>
@@ -195,13 +204,26 @@ function abrirFicha(indice, origen) {
   fichaContador.textContent = `${casoActual + 1} / ${CASOS.length}`;
   ficha.hidden = false;
   ficha.scrollTop = 0;
-  // la ficha "crece" desde la foto que tocaste hasta llenar la pantalla
+  // la ficha se abre como una pantalla: la foto se levanta y una hoja crece desde ella
   if (origen && !yaAbierta && !movimientoReducido && ficha.animate) {
-    const r = origen.getBoundingClientRect(), w = innerWidth, h = innerHeight;
-    ficha.animate([
-      { clipPath: `inset(${r.top}px ${w - r.right}px ${h - r.bottom}px ${r.left}px round 6px)`, opacity: .6 },
-      { clipPath: "inset(0px 0px 0px 0px round 0px)", opacity: 1 }
-    ], { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)" });
+    const r = origen.getBoundingClientRect();
+    const hoja = document.createElement("div");
+    hoja.className = "hoja-abriendo";
+    Object.assign(hoja.style, { top: r.top + "px", left: r.left + "px", width: r.width + "px", height: r.height + "px" });
+    document.body.appendChild(hoja);
+    ficha.style.animation = "none";       // apaga la entrada normal mientras crece la hoja
+    ficha.style.opacity = "0";
+    origen.animate([{ transform: "scale(1)" }, { transform: "scale(1.06) translateY(-8px)" }], { duration: 160, fill: "forwards" });
+    hoja.animate([
+      { top: r.top + "px", left: r.left + "px", width: r.width + "px", height: r.height + "px", borderRadius: "4px", opacity: .9 },
+      { top: "0px", left: "0px", width: innerWidth + "px", height: innerHeight + "px", borderRadius: "0px", opacity: 1 }
+    ], { duration: 520, delay: 140, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" }).onfinish = () => {
+      ficha.style.opacity = "";
+      ficha.style.animation = "";
+      ficha.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: "ease-out" });
+      hoja.remove();
+      origen.getAnimations().forEach(a => a.cancel());
+    };
   }
   document.body.classList.add("sin-scroll");      // la página de atrás no se mueve
   history.replaceState(null, "", `#caso-${caso.numero}`); // link directo al caso
@@ -298,7 +320,7 @@ function pintarTablero() {
       <span class="polaroid__pin" aria-hidden="true"></span>
       <div class="polaroid__foto">${miniVisual(c.visual)}</div>
       <h3 class="polaroid__pregunta">${c.pregunta}</h3>
-      <p class="polaroid__pie">${c.rubro === "Proyecto personal" ? "Proyecto personal" : "Caso real · " + c.rubro}</p>
+      <p class="polaroid__pie">${c.beneficio}</p>
     </article>`;
   tablero.innerHTML = `
     <svg class="tablerocasos__hilos" aria-hidden="true"></svg>
@@ -368,10 +390,7 @@ function mostrarExperiencia(i) {
     <p class="etiqueta">${x.fecha} · ${x.empresa}</p>
     <h3>${x.cargo}</h3>
     <p>${x.frase}</p>
-    <div class="lineatiempo__casos">${x.casos.map(id => {
-      const k = CASOS.findIndex(c => c.id === id);
-      return k < 0 ? "" : `<button class="chip-caso" data-abrir="${k}"><span class="oro">${CASOS[k].numero}</span> ${CASOS[k].pregunta}</button>`;
-    }).join("")}</div>`;
+    <div class="lineatiempo__casos">${x.aptitudes.map(a => `<span class="chip-apt">${a}</span>`).join("")}</div>`;
 }
 linea.addEventListener("click", (e) => { const b = e.target.closest("[data-exp]"); if (b) mostrarExperiencia(Number(b.dataset.exp)); });
 mostrarExperiencia(EXPERIENCIA.length - 1);

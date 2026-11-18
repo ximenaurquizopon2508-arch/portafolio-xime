@@ -26,24 +26,24 @@ function iniciarHojita() {
   const etapas = [
     { nombre: "Datos", titulo: "Llegan sueltos", html: `
       <div class="hojita__sueltos">
-        ${["OBR-2 · 2,750", "obr-1  4200", "Transporte 480", "OBR-001 / 650", "   3,100 MO", "OBR-002 · 2900", "#N/D", "ene-feb??"]
+        ${["PRY-2 · 2,750", "pry-1  4200", "Transporte 480", "PRY-01 / 650", "   3,100 MO", "PRY-02 · 2900", "#N/D", "ene-feb??"]
           .map((t, i) => `<span style="--i:${i}">${t}</span>`).join("")}
       </div>` },
     { nombre: "Orden", titulo: "Se ordenan", html: `
       <div class="hojita__tabla">
-        <span>Obra</span><span>Categoría</span><span>Monto</span>
-        ${[["OBR-001", "Materiales", 4200], ["OBR-001", "Mano de obra", 3100], ["OBR-001", "Transporte", 650],
-           ["OBR-002", "Materiales", 2750], ["OBR-002", "Mano de obra", 2900], ["OBR-002", "Transporte", 480]]
+        <span>Proyecto</span><span>Categoría</span><span>Monto</span>
+        ${[["PRY-01", "Materiales", 4200], ["PRY-01", "Mano de obra", 3100], ["PRY-01", "Transporte", 650],
+           ["PRY-02", "Materiales", 2750], ["PRY-02", "Mano de obra", 2900], ["PRY-02", "Transporte", 480]]
           .map((f, i) => `<i style="--i:${i}">${f[0]}</i><i style="--i:${i}">${f[1]}</i><i style="--i:${i}">${miles(f[2])}</i>`).join("")}
       </div>` },
     { nombre: "Decisión", titulo: "Y se decide", html: `
       <div class="hojita__grafico">
         <div class="hojita__barras">
-          <div><b style="--h:79%;--i:0"></b><span>OBR-001</span><small>7,950</small></div>
-          <div><b style="--h:61%;--i:1"></b><span>OBR-002</span><small>6,130</small></div>
+          <div><b style="--h:79%;--i:0"></b><span>PRY-01</span><small>7,950</small></div>
+          <div><b style="--h:61%;--i:1"></b><span>PRY-02</span><small>6,130</small></div>
           <em class="hojita__tope">presupuesto</em>
         </div>
-        <p>OBR-001 se acerca a su presupuesto: <b>revisar mano de obra.</b></p>
+        <p>PRY-01 se acerca a su presupuesto: <b>revisar mano de obra.</b></p>
       </div>` }
   ];
   caja.innerHTML = `
@@ -240,12 +240,12 @@ function iniciarDecision(caja) {
 
 // ======================= 5) TALLER DE HERRAMIENTAS =======================
 const TABLA = [
-  ["G-01", "OBR-001", "Materiales",   4200, 5000],
-  ["G-02", "OBR-001", "Mano de obra", 3100, 3000],
-  ["G-03", "OBR-002", "Materiales",   2750, 2500],
-  ["G-04", "OBR-002", "Transporte",    480,  600],
-  ["G-05", "OBR-001", "Transporte",    650,  600],
-  ["G-06", "OBR-002", "Mano de obra", 2900, 3200]
+  ["G-01", "PRY-01", "Materiales",   4200, 5000],
+  ["G-02", "PRY-01", "Mano de obra", 3100, 3000],
+  ["G-03", "PRY-02", "Materiales",   2750, 2500],
+  ["G-04", "PRY-02", "Transporte",    480,  600],
+  ["G-05", "PRY-01", "Transporte",    650,  600],
+  ["G-06", "PRY-02", "Mano de obra", 2900, 3200]
 ];
 
 // Dibuja una hoja tipo Excel. columnas = títulos; filas = arreglo de arreglos
@@ -276,11 +276,11 @@ const PESTANAS = {
         <div data-extra></div>
         <div class="lab__hoja" data-hoja></div>
         <p class="lab__explica" data-explica></p>`;
-      let f = "buscar", codigo = "G-03", obra = "OBR-001", categoria = "Transporte", buscado = "G-09";
-      const cols = ["Código", "Obra", "Categoría", "Monto", "Presupuesto"];
+      let f = "buscar", codigo = "G-03", obra = "PRY-01", categoria = "Transporte", buscado = "G-09";
+      const cols = ["Código", "Proyecto", "Categoría", "Monto", "Presupuesto"];
       const q = (s) => caja.querySelector(s);
       const selector = (data, opciones, actual) => `<select class="ej-select" data-${data}>${opciones.map(o => `<option ${o === actual ? "selected" : ""}>${o}</option>`).join("")}</select>`;
-      const codigos = TABLA.map(r => r[0]), obras = ["OBR-001", "OBR-002"], cats = [...new Set(TABLA.map(r => r[2]))];
+      const codigos = TABLA.map(r => r[0]), obras = ["PRY-01", "PRY-02"], cats = [...new Set(TABLA.map(r => r[2]))];
 
       function mostrar() {
         q("[data-extra]").innerHTML = "";
@@ -333,8 +333,8 @@ const PESTANAS = {
           q("[data-explica]").textContent = "La tabla se pinta sola: lo que necesita atención salta a la vista.";
         }
         if (f === "din") {
-          q("[data-control]").textContent = "Resumen por categoría y obra";
-          q("[data-formula]").textContent = "Insertar → Tabla dinámica  (Filas: Categoría · Columnas: Obra · Valores: Suma de Monto)";
+          q("[data-control]").textContent = "Resumen por categoría y proyecto";
+          q("[data-formula]").textContent = "Insertar → Tabla dinámica  (Filas: Categoría · Columnas: Proyecto · Valores: Suma de Monto)";
           const s = (c, o) => TABLA.filter(r => r[2] === c && r[1] === o).reduce((a, r) => a + r[3], 0);
           const filas = cats.map(c => [c, ...obras.map(o => s(c, o)), obras.reduce((a, o) => a + s(c, o), 0)]);
           filas.push(["Total", ...obras.map(o => cats.reduce((a, c) => a + s(c, o), 0)), TABLA.reduce((a, r) => a + r[3], 0)]);
@@ -437,7 +437,7 @@ End Sub</pre><button class="ej-boton ej-boton--principal" data-vba>▶ Ejecutar<
         "Institucional": { part: 91, v: [86, 84, 80, 89, 88] },
         "Zona Norte":    { part: 93, v: [88, 85, 81, 91, 90] },
         "Zona Centro":   { part: 86, v: [76, 72, 66, 80, 77] },
-        "Agencia 08":    { part: 78, v: [68, 62, 58, 72, 69] }
+        "Sede 08":    { part: 78, v: [68, 62, 58, 72, 69] }
       };
       caja.innerHTML = `
         <div class="pbi">
@@ -449,7 +449,7 @@ End Sub</pre><button class="ej-boton ej-boton--principal" data-vba>▶ Ejecutar<
             <div class="pbi__tarjeta"><span>Participación</span><b data-part></b><small data-vs></small></div>
             <div class="pbi__tarjeta pbi__tarjeta--ancha"><span>Resultado por dimensión</span><div data-barras></div></div>
           </div>
-          <p class="pbi__nota">Recreación del dashboard que hice en Power BI, con datos ficticios. El real tenía 46 páginas y 106 agencias.</p>
+          <p class="pbi__nota">Recreación del dashboard que hice en Power BI, con datos ficticios. El real era mucho más grande.</p>
         </div>`;
       const sem = (v) => v >= 85 ? ["Impulsor", "#1E1A18"] : v >= 70 ? ["Formativo", "#C98F98"] : ["Restrictivo", "#9E3B4D"];
       function mostrar(nombre) {
@@ -477,12 +477,12 @@ End Sub</pre><button class="ej-boton ej-boton--principal" data-vba>▶ Ejecutar<
     nombre: "SQL · básico",
     iniciar(caja) {
       const consultas = {
-        where: { boton: "WHERE", sql: "SELECT codigo, categoria, monto\nFROM gastos\nWHERE obra = 'OBR-002';",
-          correr: () => ({ cols: ["codigo", "categoria", "monto"], filas: TABLA.filter(r => r[1] === "OBR-002").map(r => [r[0], r[2], r[3]]) }) },
+        where: { boton: "WHERE", sql: "SELECT codigo, categoria, monto\nFROM gastos\nWHERE proyecto = 'PRY-02';",
+          correr: () => ({ cols: ["codigo", "categoria", "monto"], filas: TABLA.filter(r => r[1] === "PRY-02").map(r => [r[0], r[2], r[3]]) }) },
         group: { boton: "GROUP BY", sql: "SELECT categoria, SUM(monto) AS total\nFROM gastos\nGROUP BY categoria;",
           correr: () => { const m = {}; TABLA.forEach(r => m[r[2]] = (m[r[2]] || 0) + r[3]); return { cols: ["categoria", "total"], filas: Object.entries(m) }; } },
-        order: { boton: "ORDER BY", sql: "SELECT codigo, obra, monto\nFROM gastos\nORDER BY monto DESC;",
-          correr: () => ({ cols: ["codigo", "obra", "monto"], filas: [...TABLA].sort((a, b) => b[3] - a[3]).map(r => [r[0], r[1], r[3]]) }) }
+        order: { boton: "ORDER BY", sql: "SELECT codigo, proyecto, monto\nFROM gastos\nORDER BY monto DESC;",
+          correr: () => ({ cols: ["codigo", "proyecto", "monto"], filas: [...TABLA].sort((a, b) => b[3] - a[3]).map(r => [r[0], r[1], r[3]]) }) }
       };
       caja.innerHTML = `
         <div class="lab__botones">${Object.entries(consultas).map(([k, c], i) => `<button class="ej-boton ${i === 0 ? "activo" : ""}" data-q="${k}">${c.boton}</button>`).join("")}</div>
@@ -507,7 +507,7 @@ End Sub</pre><button class="ej-boton ej-boton--principal" data-vba>▶ Ejecutar<
     iniciar(caja) {
       caja.innerHTML = `
         <div class="lab__botones">
-          <button class="ej-boton activo" data-py="retencion">Retención de pacientes (pandas)</button>
+          <button class="ej-boton activo" data-py="retencion">Retención de clientes (pandas)</button>
           <button class="ej-boton" data-py="adn">Limpieza de nombres (DataMatch)</button>
         </div>
         <div data-py-panel></div>`;
@@ -521,16 +521,16 @@ End Sub</pre><button class="ej-boton ej-boton--principal" data-vba>▶ Ejecutar<
 pagadas = df[(df["Estado"] != "Anulado") &amp;
              (df["Estado Comprobante"] == "Registrado")]
 
-<span class="py__c"># 1 paciente en 1 día = 1 visita</span>
-visitas = pagadas.drop_duplicates(["cod_paciente", "dia"])
+<span class="py__c"># 1 cliente en 1 día = 1 visita</span>
+visitas = pagadas.drop_duplicates(["cod_cliente", "dia"])
 
 <span class="py__c"># Cohortes: % que vuelve cada mes según su mes de llegada</span>
 tabla = visitas.pivot_table(index="cohorte", columns="mes_n",
-                            values="cod_paciente", aggfunc="nunique")
+                            values="cod_cliente", aggfunc="nunique")
 retencion = (tabla.div(tabla[0], axis=0) * 100).round(1)
 
 <span class="py__c"># Control real = vuelve 21+ días después</span>
-visitas["dias"] = visitas.groupby("cod_paciente")["dia"].diff().dt.days
+visitas["dias"] = visitas.groupby("cod_cliente")["dia"].diff().dt.days
 visitas["es_control"] = visitas["dias"] >= 21</pre>
               <div class="py__prueba">
                 <p class="ej-pista">Salida (datos ficticios):</p>
@@ -584,7 +584,7 @@ def super_limpieza_adn(texto):
     nombre: "Finanzas · IGV",
     iniciar(caja) {
       caja.innerHTML = `
-        <p class="lab__explica">¿Cuánto IGV pagas de tu bolsillo? Mueve cuánto del gasto de un proyecto tiene factura. Proyecto ficticio, la misma lógica de mi dashboard de obras.</p>
+        <p class="lab__explica">¿Cuánto IGV pagas de tu bolsillo? Mueve cuánto del gasto de un proyecto tiene factura. Proyecto ficticio.</p>
         <div class="decision__caja" data-igv></div>`;
       iniciarDecision(caja.querySelector("[data-igv]"));
     }

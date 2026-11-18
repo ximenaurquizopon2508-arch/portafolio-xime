@@ -25,7 +25,7 @@ const EJEMPLOS = {
       </div>
 
       <div data-panel="antes" class="ej-panel">
-        <p class="ej-titulo">Cierre de mes · clínica ficticia</p>
+        <p class="ej-titulo">Cierre de mes · empresa ficticia</p>
         <div class="ej-fila"><span>Entró</span><b>${soles(62000)}</b></div>
         <div class="ej-fila"><span>Salió</span><b>${soles(58500)}</b></div>
         <div class="ej-fila ej-fila--total"><span>Saldo</span><b>${soles(3500)}</b></div>
@@ -47,7 +47,7 @@ const EJEMPLOS = {
         <p class="ej-titulo">Lo que queda de cada servicio · después de IGV y tarjeta</p>
         <div class="serv" data-serv></div>
         <div class="ej-control">
-          <span>Precio de la bioimpedancia:</span>
+          <span>Precio de la capacitación:</span>
           <input type="range" min="40" max="120" step="5" value="70" data-precio>
           <b data-precio-txt></b>
         </div>
@@ -60,7 +60,7 @@ const EJEMPLOS = {
       const INDICADORES = [
         ["Margen EBITDA", 15, "min", [12.4, 16.8, 18.1]],
         ["Margen de seguridad", 10, "min", [4.2, 8.9, 12.5]],
-        ["% pacientes que regresan", 50, "min", [41.0, 47.5, 53.2]],
+        ["% clientes que regresan", 50, "min", [41.0, 47.5, 53.2]],
         ["Crecimiento vs. mes anterior", 3, "min", [1.1, 5.4, 2.6]],
         ["Comisión de tarjeta / ingresos", 2.2, "max", [2.9, 2.4, 2.1]],
         ["Personal / ingresos", 12, "max", [13.8, 11.6, 10.9]]
@@ -94,14 +94,14 @@ const EJEMPLOS = {
 
       // ---------- Ganancia por servicio ----------
       const IGV = 0.18, TARJETA = 0.025;
-      // [servicio, cobrado (con IGV), costo directo]; la bioimpedancia se calcula con el precio del control
-      const FIJOS = [["Consultas", 30000, 20500], ["Laboratorio", 21000, 16900], ["Imagenología", 4200, 2500]];
+      // [servicio, cobrado (con IGV), costo directo]; la capacitación se calcula con el precio del control
+      const FIJOS = [["Consultoría", 30000, 20500], ["Mantenimiento", 21000, 16900], ["Instalación", 4200, 2500]];
       const BIO = { cantidad: 60, costoUnitario: 38 };
 
       function pintarServicios() {
         const precio = Number(raiz.querySelector("[data-precio]").value);
         raiz.querySelector("[data-precio-txt]").textContent = soles(precio);
-        const filas = [...FIJOS, ["Bioimpedancia", BIO.cantidad * precio, BIO.cantidad * BIO.costoUnitario]]
+        const filas = [...FIJOS, ["Capacitación", BIO.cantidad * precio, BIO.cantidad * BIO.costoUnitario]]
           .map(([nombre, cobrado, costo]) => {
             const queda = cobrado / (1 + IGV) - cobrado * TARJETA - costo;
             return { nombre, queda, margen: queda / cobrado * 100 };
@@ -113,8 +113,8 @@ const EJEMPLOS = {
             <b>${soles(Math.round(f.queda))}</b></div>`).join("");
         const bio = filas[3];
         raiz.querySelector("[data-serv-resumen]").textContent = bio.queda <= 0
-          ? `A ${soles(precio)}, cada bioimpedancia pierde plata: el IGV y la tarjeta se comen el margen.`
-          : `A ${soles(precio)}, a la bioimpedancia le queda ${bio.margen.toFixed(0)}% de lo cobrado.`;
+          ? `A ${soles(precio)}, cada capacitación pierde plata: el IGV y la tarjeta se comen el margen.`
+          : `A ${soles(precio)}, a la capacitación le queda ${bio.margen.toFixed(0)}% de lo cobrado.`;
       }
       raiz.querySelector("[data-precio]").addEventListener("input", pintarServicios);
       pintarServicios();
@@ -257,14 +257,14 @@ const EJEMPLOS = {
       <div class="ej-dos">
         <div class="ej-panel" data-lectura><p class="ej-pista">Esperando comprobante…</p></div>
         <div class="ej-panel">
-          <p class="ej-titulo">Obra OBR-001 · mes ficticio</p>
+          <p class="ej-titulo">Proyecto PRY-01 · mes ficticio</p>
           <div data-obra></div>
         </div>
       </div>
       </div>
 
       <div data-panel="dashboard" hidden>
-        <p class="ej-pista">Obra ficticia: facturado S/ 120,000 y gastado S/ 52,000 (con IGV). Mueve cuánto del gasto tiene factura.</p>
+        <p class="ej-pista">Proyecto ficticio: facturado S/ 120,000 y gastado S/ 52,000 (con IGV). Mueve cuánto del gasto tiene factura.</p>
         <label class="ej-slider"><span>Gasto con factura: <b data-pct></b></span>
           <input type="range" min="20" max="100" step="5" value="40" data-sustento></label>
         <div class="ej-dos">
@@ -304,7 +304,7 @@ const EJEMPLOS = {
       function pintarObra() {
         const utilidad = obra.valorizado - obra.gastado;
         raiz.querySelector("[data-obra]").innerHTML = `
-          <div class="ej-fila"><span>Valorizado</span><b>${soles(obra.valorizado)}</b></div>
+          <div class="ej-fila"><span>Facturado</span><b>${soles(obra.valorizado)}</b></div>
           <div class="ej-fila"><span>Gastado</span><b>${soles(obra.gastado)}</b></div>
           <div class="ej-fila ej-fila--total"><span>Utilidad estimada</span><b>${soles(utilidad)} · ${Math.round(utilidad / obra.valorizado * 100)}%</b></div>
           <div class="ej-fila"><span>Gastos sin sustento</span><b class="ej-alerta">${soles(obra.sinSustento)}</b></div>
@@ -348,7 +348,7 @@ const EJEMPLOS = {
         } else {
           pintarPasos(3);
           guardados.add(clave); obra.gastado += c.total; pintarObra();
-          resumen.textContent = `Guardado en ${c.categoria.toLowerCase()} y la utilidad de la obra se actualizó sola.`;
+          resumen.textContent = `Guardado en ${c.categoria.toLowerCase()} y la utilidad del proyecto se actualizó sola.`;
         }
       });
       // ----- Pestaña "Ver el dashboard" (números ficticios) -----
@@ -480,7 +480,7 @@ const EJEMPLOS = {
         if (ganancia < 0) v = "⚠ Pierdes plata con cada servicio.";
         else if (precio < mercadoMin) v = "Ganas, pero estás regalando margen: el mercado paga más.";
         else if (precio <= mercadoMax) v = "✓ En rango de mercado y con margen sano.";
-        else v = "Muy por encima del mercado: riesgo de perder pacientes.";
+        else v = "Muy por encima del mercado: riesgo de perder clientes.";
         if (pago === "pasarela" && ganancia > 0) v += ` La pasarela se lleva ${soles(comision * 1000)} cada 1,000 servicios.`;
         raiz.querySelector("[data-veredicto]").textContent = v;
       }
@@ -498,9 +498,9 @@ const EJEMPLOS = {
   // ============ ALERTAS TDR ============
   "tdr": {
     html: () => `
-      <p class="ej-pista">Mueve el día de obra y mira cuándo sale cada alerta.</p>
+      <p class="ej-pista">Mueve el día del proyecto y mira cuándo sale cada alerta.</p>
       <label class="ej-slider">
-        <span>Día de obra: <b data-dia></b></span>
+        <span>Día del proyecto: <b data-dia></b></span>
         <input type="range" min="0" max="60" step="1" value="0" data-slider>
       </label>
       <div class="ej-panel" data-lista></div>
@@ -508,9 +508,9 @@ const EJEMPLOS = {
     iniciar: (raiz) => {
       // obligación, día límite, responsable, canal
       const obligaciones = [
-        ["Plan de seguridad aprobado", 7, "Residente", "Correo"],
+        ["Plan de seguridad aprobado", 7, "Jefe de proyecto", "Correo"],
         ["Pruebas de calidad del concreto", 21, "Calidad", "Telegram"],
-        ["Informe mensual de avance", 30, "Residente", "Correo"],
+        ["Informe mensual de avance", 30, "Jefe de proyecto", "Correo"],
         ["Valorización del mes", 32, "Gerencia", "Correo + Telegram"],
         ["Renovación de pólizas", 45, "Administración", "Correo"]
       ];
@@ -536,10 +536,10 @@ const EJEMPLOS = {
   // ============ CLIMA LABORAL (por jerarquía) ============
   "clima": {
     html: () => `
-      <p class="ej-pista">Elige una zona y una agencia, como haría cada líder. (En el real eran 106 agencias.)</p>
+      <p class="ej-pista">Elige una zona y una sede, como haría cada líder.</p>
       <div class="ej-botones">
         <select class="ej-select" data-zona aria-label="Zona"></select>
-        <select class="ej-select" data-agencia aria-label="Agencia"></select>
+        <select class="ej-select" data-agencia aria-label="Sede"></select>
       </div>
       <div class="ej-kpis">
         <div class="ej-kpi"><span>Participación</span><b data-part></b></div>
@@ -561,12 +561,12 @@ const EJEMPLOS = {
       const dimensiones = ["Credibilidad", "Respeto", "Imparcialidad", "Camaradería", "Orgullo"];
       // zona → agencias: [nombre, participación %, resultados por dimensión]. Todo ficticio.
       const zonas = {
-        "Zona Norte":  [["Agencia 01", 95, [88, 84, 80, 91, 90]], ["Agencia 02", 88, [76, 70, 66, 82, 79]],
-                        ["Agencia 03", 100, [91, 89, 86, 94, 92]], ["Agencia 04", 90, [83, 78, 74, 87, 85]]],
-        "Zona Centro": [["Agencia 05", 82, [72, 65, 61, 75, 70]], ["Agencia 06", 93, [85, 82, 79, 88, 86]],
-                        ["Agencia 07", 89, [80, 77, 70, 84, 83]], ["Agencia 08", 78, [68, 62, 58, 72, 69]]],
-        "Zona Sur":    [["Agencia 09", 97, [90, 87, 85, 93, 91]], ["Agencia 10", 94, [86, 83, 80, 90, 88]],
-                        ["Agencia 11", 91, [79, 74, 71, 85, 82]], ["Agencia 12", 92, [84, 80, 77, 89, 87]]]
+        "Zona Norte":  [["Sede 01", 95, [88, 84, 80, 91, 90]], ["Sede 02", 88, [76, 70, 66, 82, 79]],
+                        ["Sede 03", 100, [91, 89, 86, 94, 92]], ["Sede 04", 90, [83, 78, 74, 87, 85]]],
+        "Zona Centro": [["Sede 05", 82, [72, 65, 61, 75, 70]], ["Sede 06", 93, [85, 82, 79, 88, 86]],
+                        ["Sede 07", 89, [80, 77, 70, 84, 83]], ["Sede 08", 78, [68, 62, 58, 72, 69]]],
+        "Zona Sur":    [["Sede 09", 97, [90, 87, 85, 93, 91]], ["Sede 10", 94, [86, 83, 80, 90, 88]],
+                        ["Sede 11", 91, [79, 74, 71, 85, 82]], ["Sede 12", 92, [84, 80, 77, 89, 87]]]
       };
       const promedio = (lista) => lista.reduce((a, b) => a + b, 0) / lista.length;
 
@@ -659,15 +659,15 @@ const EJEMPLOS = {
       const procesos = [
         ["Estratégico", "Dirección y gerencia", "Gerente general", "Decidir, aprobar y controlar resultados y costos."],
         ["Estratégico", "Captación de contratos", "Gerente general", "Buscar procesos, armar propuestas y formar consorcios."],
-        ["Principal", "Expedientes técnicos", "Gerencia + proyectista", "Diseñar el proyecto y entregarlo aprobado."],
-        ["Principal", "Supervisión de obras", "Jefe de supervisión", "Controlar la obra que ejecuta otro contratista."],
-        ["Principal", "Ejecución de obras", "Residente de obra", "Construir la obra según el expediente técnico."],
+        ["Principal", "Diseño", "Gerencia + diseñador", "Diseñar el proyecto y entregarlo aprobado."],
+        ["Principal", "Supervisión de proyectos", "Jefe de supervisión", "Controlar el proyecto que ejecuta otro proveedor."],
+        ["Principal", "Ejecución de proyectos", "Jefe de proyecto", "Ejecutar el proyecto según lo acordado."],
         ["Común", "Arranque de contrato", "Administración", "Antes del día 1: plazos, penalidades, seguros y garantías cargados."],
         ["Común", "Cobro del pago", "Encargado de cobro", "Facturar y gestionar el pago en la oficina donde está el trámite."],
         ["Común", "Cierre y liquidación", "Administración + gerencia", "Liquidar el contrato y recuperar la garantía."],
         ["Común", "Cartas y archivo", "Quien emite la carta", "Numerar, presentar y archivar cada carta con su cargo."],
         ["Soporte", "Finanzas", "Administración", "Facturas, IGV y cierre mensual con el contador."],
-        ["Soporte", "Logística", "Residente + almacenero", "Compras, requerimientos y almacén de obra."],
+        ["Soporte", "Logística", "Jefe de proyecto + almacén", "Compras, requerimientos y almacén del proyecto."],
         ["Soporte", "Personal y seguridad", "Administración + seguridad", "Condiciones de trabajo, SCTR, EPP y charlas."]
       ];
       const tipos = ["Estratégico", "Principal", "Común", "Soporte"];
@@ -728,81 +728,92 @@ const EJEMPLOS = {
   // ============ DATAMATCH (proyecto personal) ============
   "datamatch": {
     html: () => `
-      <p class="ej-pista">Dos listas con los mismos nombres, escritos distinto. Crúzalas.</p>
+      <p class="ej-pista">Los nombres llegan mal escritos. BUSCARX no los reconoce; DataMatch primero los limpia y luego mide cuánto se parecen.</p>
       <div class="ej-botones">
-        <button class="ej-boton" data-cruce="formula">Cruzar con fórmula (BUSCARV)</button>
-        <button class="ej-boton ej-boton--principal" data-cruce="datamatch">Cruzar con DataMatch 🐰</button>
+        <button class="ej-boton ej-boton--principal" data-dm="cruzar">Limpiar y cruzar con DataMatch 🐰</button>
+        <button class="ej-boton" data-dm="buscarx">¿Y con BUSCARX?</button>
       </div>
       <div class="buni" data-buni hidden>
         <span class="buni__pista" data-pista></span>
         <div class="buni__barra"><div data-avance></div></div>
       </div>
-      <div class="ej-dos">
-        <div class="ej-panel">
-          <p class="ej-titulo">Archivo de trabajo</p>
-          <div data-trabajo></div>
-        </div>
-        <div class="ej-panel">
-          <p class="ej-titulo">Archivo de referencia</p>
-          <div data-referencia></div>
-        </div>
+      <div class="dm-tres">
+        <div class="ej-panel"><p class="ej-titulo">1 · Llegan así</p><div data-col="sucio"></div></div>
+        <div class="ej-panel"><p class="ej-titulo">2 · Se limpian</p><div data-col="limpio"></div>
+          <p class="dm-regla">sin tildes · sin comas · mayúsculas iguales · mismo orden</p></div>
+        <div class="ej-panel"><p class="ej-titulo">3 · Se comparan con la otra base</p><div data-col="match"></div></div>
       </div>
+      <label class="ej-slider dm-exigencia"><span>Exigencia del parecido: <b data-umbral></b></span>
+        <input type="range" min="60" max="95" step="5" value="80" data-exigencia></label>
       <div class="ej-leyenda">
-        <span><i style="background:#F3E1DF"></i>exacto</span>
-        <span><i style="background:#F7E7A8"></i>parecido: verificar</span>
-        <span><i style="background:#E7A3AE"></i>no encontrado</span>
+        <span><i style="background:#DCE8D8"></i>seguro</span>
+        <span><i style="background:#F7E7A8"></i>parecido: revisar</span>
+        <span><i style="background:#E7A3AE"></i>sin pareja</span>
       </div>
-      <p class="ej-resultado" data-resumen></p>
+      <p class="ej-resultado" data-resumen>Toca "Limpiar y cruzar" para empezar.</p>
     `,
     iniciar: (raiz) => {
-      const trabajo = ["Pérez, Juan", "MARIA LOPEZ", "Rodríguez Carla", "Diaz Q. Luis", "Ana Torres", "Pedro Salas"];
-      const referencia = [["JUAN PEREZ", "Créditos"], ["María López", "Cobranzas"], ["CARLA RODRIGUEZ", "Operaciones"],
-                          ["Luis Díaz Quispe", "Comercial"], ["Ana Torres", "Administración"], ["Jorge Ruiz", "Créditos"]];
+      const sucios = ["Pérez, Juan", "  maría  LÓPEZ", "Diaz Q. Luis", "Rodriguez, Karla", "Ana Torres", "Pedro Salas"];
+      const otraBase = ["JUAN PEREZ", "Maria Lopez", "Luis Díaz Quispe", "Carla Rodríguez", "Ana Torres", "Jorge Ruiz"];
 
-      // La misma limpieza que hace DataMatch en Python ("ADN" del nombre)
+      // La limpieza de DataMatch: sin tildes ni signos, mayúsculas, palabras en orden ("ADN" del nombre)
       const adn = (t) => t.toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
                           .replace(/[^A-Z0-9\s]/g, " ").split(/\s+/).filter(Boolean).sort().join(" ");
-      // Parecido entre dos textos (0 a 100), como el "ratio" de thefuzz
-      function parecido(a, b) {
+      // Parecido entre dos textos (0 a 100), como thefuzz: por letras y por palabras
+      function letras(a, b) {
         const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
         for (let j = 1; j <= b.length; j++) d[0][j] = j;
         for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
-          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 2));
-        return Math.round((a.length + b.length - d[a.length][b.length]) / (a.length + b.length) * 100);
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        return d[a.length][b.length];
       }
-
-      raiz.querySelector("[data-referencia]").innerHTML = referencia.map(([n, area]) =>
-        `<div class="ej-fila"><span>${n}</span><b>${area}</b></div>`).join("");
-      const pintarTrabajo = (filas) => raiz.querySelector("[data-trabajo]").innerHTML = filas.join("");
-      pintarTrabajo(trabajo.map(n => `<div class="ej-fila"><span>${n}</span><b class="ej-suave">¿área?</b></div>`));
-
-      function cruzar(modo) {
-        let encontrados = 0;
-        const filas = trabajo.map(nombre => {
-          if (modo === "formula") {
-            // BUSCARV: solo si el texto es igual (sin contar mayúsculas)
-            const r = referencia.find(([n]) => n.toUpperCase() === nombre.toUpperCase());
-            if (r) { encontrados++; return `<div class="ej-fila dm-exacto"><span>${nombre}</span><b>${r[1]}</b></div>`; }
-            return `<div class="ej-fila dm-no"><span>${nombre}</span><b>#N/D</b></div>`;
-          }
-          const limpio = adn(nombre);
-          const exacto = referencia.find(([n]) => adn(n) === limpio);
-          if (exacto) { encontrados++; return `<div class="ej-fila dm-exacto"><span>${nombre}</span><b>${exacto[1]}</b></div>`; }
-          const mejor = referencia.map(([n, area]) => ({ n, area, p: parecido(limpio, adn(n)) })).sort((x, y) => y.p - x.p)[0];
-          if (mejor.p >= 50) { encontrados++; return `<div class="ej-fila dm-parecido" title="Se usó: ${mejor.n}"><span class="dm-nombre">${nombre}<small>Se parece ${mejor.p}% a "${mejor.n}"</small></span><b>${mejor.area}</b></div>`; }
-          return `<div class="ej-fila dm-no"><span>${nombre}</span><b>NO ENCONTRADO</b></div>`;
-        });
-        pintarTrabajo(filas);
-        raiz.querySelector("[data-resumen]").textContent = modo === "formula"
-          ? `BUSCARV encontró ${encontrados} de ${trabajo.length}: falla con tildes, comas y nombres en otro orden.`
-          : `DataMatch encontró ${encontrados} de ${trabajo.length}. El amarillo se revisa a mano antes de confiar en él.`;
+      function parecido(a, b) {
+        // por palabra: igual = 1 · casi igual (una letra o una inicial) = 0.7
+        const pa = a.split(" "), pb = b.split(" ");
+        const puntos = pa.reduce((s, p) => s + (pb.includes(p) ? 1
+          : pb.some(q => (p.length > 2 && letras(p, q) <= 1) || (p.length <= 2 && q.startsWith(p))) ? 0.7 : 0), 0);
+        const porPalabra = puntos / Math.max(pa.length, pb.length);
+        return Math.round((porPalabra > 0 ? porPalabra : (1 - letras(a, b) / Math.max(a.length, b.length)) * 0.5) * 100);
       }
+      const filas = sucios.map(n => {
+        const limpio = adn(n);
+        const mejor = otraBase.map(o => ({ o, p: parecido(limpio, adn(o)) })).sort((x, y) => y.p - x.p)[0];
+        return { n, limpio, ...mejor };
+      });
+      const col = (k) => raiz.querySelector(`[data-col="${k}"]`);
+      const umbral = raiz.querySelector("[data-exigencia]");
+      let cruzado = false;
+
+      col("sucio").innerHTML = filas.map(f => `<div class="ej-fila"><span class="dm-mono">${f.n.replace(/ /g, "·")}</span></div>`).join("");
+      col("limpio").innerHTML = filas.map(() => `<div class="ej-fila"><span class="ej-suave">…</span></div>`).join("");
+      col("match").innerHTML = filas.map(() => `<div class="ej-fila"><span class="ej-suave">…</span></div>`).join("");
+
+      function pintar() {
+        const u = Number(umbral.value);
+        raiz.querySelector("[data-umbral]").textContent = u + "%";
+        if (!cruzado) return;
+        let seguros = 0, revisar = 0, sin = 0;
+        col("limpio").innerHTML = filas.map(f => `<div class="ej-fila"><span class="dm-mono">${f.limpio}</span></div>`).join("");
+        col("match").innerHTML = filas.map(f => {
+          const tipo = f.p === 100 || f.p >= u + 10 ? "dm-exacto" : f.p >= u ? "dm-parecido" : "dm-no";
+          tipo === "dm-exacto" ? seguros++ : tipo === "dm-parecido" ? revisar++ : sin++;
+          return `<div class="ej-fila ${tipo}"><span>${tipo === "dm-no" ? "—" : f.o}</span><b>${f.p}%</b></div>`;
+        }).join("");
+        raiz.querySelector("[data-resumen]").textContent =
+          `DataMatch: ${seguros} seguros, ${revisar} para revisar y ${sin} sin pareja. Sube la exigencia y verás cómo cambia.`;
+      }
+      umbral.addEventListener("input", pintar);
+      pintar();
 
       raiz.addEventListener("click", (e) => {
-        const modo = e.target.dataset.cruce;
-        if (!modo) return;
-        if (modo === "formula") return cruzar("formula");
-        // Buni corre hacia la zanahoria mientras "cruza"
+        const accion = e.target.dataset.dm;
+        if (accion === "buscarx") {
+          const n = sucios.filter(s => otraBase.some(o => o.toUpperCase() === s.toUpperCase())).length;
+          raiz.querySelector("[data-resumen]").textContent =
+            `BUSCARX encuentra ${n} de ${sucios.length}: solo reconoce el texto idéntico. Una tilde, una coma o el orden ya lo rompen.`;
+        }
+        if (accion !== "cruzar") return;
+        // Buni corre hacia la zanahoria mientras limpia y cruza
         const buni = raiz.querySelector("[data-buni]"), pista = raiz.querySelector("[data-pista]"), avance = raiz.querySelector("[data-avance]");
         buni.hidden = false;
         let paso = 0; const total = 16;
@@ -810,13 +821,14 @@ const EJEMPLOS = {
           paso++;
           pista.textContent = "|" + " ".repeat(paso) + "🐰" + " ".repeat(total - paso) + "🥕|";
           avance.style.width = (paso / total * 100) + "%";
-          if (paso >= total) { clearInterval(timer); setTimeout(() => { buni.hidden = true; cruzar("datamatch"); }, 250); }
-        }, 70);
+          if (paso >= total) { clearInterval(timer); setTimeout(() => { buni.hidden = true; cruzado = true; pintar(); }, 250); }
+        }, 60);
       });
     }
   },
 
-  // ============ RETENCIÓN DE PACIENTES (cohortes) ============
+
+  // ============ RETENCIÓN DE CLIENTES (cohortes) ============
   "retencion": {
     html: () => `
       <div class="ej-botones">
@@ -824,16 +836,16 @@ const EJEMPLOS = {
         <button class="ej-boton" data-modo="control">Solo controles reales (21+ días)</button>
       </div>
       <div class="ej-panel">
-        <p class="ej-titulo">% de pacientes que vuelve, según su mes de llegada</p>
+        <p class="ej-titulo">% de clientes que vuelve, según su mes de llegada</p>
         <div class="cohorte" data-tabla></div>
       </div>
       <p class="ej-resultado" data-resumen></p>
       <div class="ej-panel">
         <p class="ej-titulo">Simulador: recuperar a los que no vuelven</p>
-        <label class="ej-slider"><span>Recupero el <b data-pct></b> de 300 pacientes que no volvieron</span>
+        <label class="ej-slider"><span>Recupero el <b data-pct></b> de 300 clientes que no volvieron</span>
           <input type="range" min="0" max="30" step="5" value="10" data-recupero></label>
         <div class="ej-kpis">
-          <div class="ej-kpi"><span>Pacientes recuperados</span><b data-pacientes></b></div>
+          <div class="ej-kpi"><span>Clientes recuperados</span><b data-clientes></b></div>
           <div class="ej-kpi"><span>Ingreso extra al mes</span><b data-ingreso></b><small>con un ticket de S/ 150</small></div>
         </div>
       </div>
@@ -867,7 +879,7 @@ const EJEMPLOS = {
       function simular() {
         const pct = Number(slider.value), n = Math.round(300 * pct / 100);
         raiz.querySelector("[data-pct]").textContent = pct + "%";
-        raiz.querySelector("[data-pacientes]").textContent = n;
+        raiz.querySelector("[data-clientes]").textContent = n;
         raiz.querySelector("[data-ingreso]").textContent = soles(n * 150);
       }
       slider.addEventListener("input", simular);

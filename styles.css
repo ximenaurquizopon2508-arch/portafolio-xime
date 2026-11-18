@@ -940,3 +940,36 @@ body.sin-scroll { overflow: hidden; }
   .certs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   .cert__img { height: 90px; }
 }
+
+/* DataMatch: limpiar → comparar */
+.dm-tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dm-mono { font-family: var(--letra-etiqueta); font-size: 12px; }
+.dm-regla { font-family: var(--letra-etiqueta); font-size: 10.5px; color: var(--ej-suave); margin-top: 6px; }
+.dm-exigencia { margin-top: 4px; }
+.ej-fila.dm-exacto { background: #DCE8D8; }
+@media (max-width: 760px) { .dm-tres { grid-template-columns: 1fr; } }
+
+/* ================= Portada llena + menos espacio en blanco ================= */
+:root { --ancho-max: 1440px; }
+.portada { min-height: calc(100vh - 74px); padding: 20px 5vw 28px; gap: 40px; align-items: center; }
+.portada__nota { margin: 12px 0 16px; }
+.portada__botones { margin-top: 16px; }
+.portada__contacto { display: flex; align-items: center; gap: 8px; }
+.seccion { padding: 48px 5vw; }
+.seccion__cabeza { margin-bottom: 22px; }
+.como { margin-top: 22px; }
+.como__titulo { margin-bottom: 8px; }
+.como__pasos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.como__paso { display: grid; gap: 3px; padding: 12px 14px; background: #FFFBF7; border: 1px solid var(--linea); }
+.como__num { font-family: var(--letra-etiqueta); font-size: 10.5px; color: var(--rosa-profundo); }
+.como__paso b { font-family: var(--letra-titulo); font-size: 20px; font-weight: 500; line-height: 1.1; }
+.como__paso small { font-size: 12.5px; color: var(--tinta-suave); }
+.como__paso i { font-style: normal; justify-self: start; margin-top: 4px; font-family: var(--letra-etiqueta); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 7px; border: 1px solid var(--linea); color: var(--tinta-suave); }
+.chip-apt { font-family: var(--letra-etiqueta); font-size: 11px; padding: 5px 10px; border: 1px solid var(--linea); background: var(--rosa-claro); }
+.polaroid__pie { text-transform: none; letter-spacing: 0; font-family: var(--letra-texto); font-size: 13px; line-height: 1.4; }
+.hoja-abriendo { position: fixed; z-index: 55; background: var(--hueso); border: 1px solid var(--linea); box-shadow: 0 30px 60px -30px rgba(30,26,24,.5); pointer-events: none; }
+@media (max-width: 900px) {
+  .portada { min-height: 0; }
+  .como__pasos { grid-template-columns: 1fr; }
+}
+.ficha__contenido { max-width: 1140px; }

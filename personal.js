@@ -32,25 +32,26 @@ const FOTOS = [
 
 /*
   EXPERIENCIA: cada punto de la línea de tiempo (del más antiguo al más reciente).
-    casos → los id de casos.js que hiciste ahí (salen como botones)
+    frase     → qué aportaste, en positivo y sin contar problemas de la empresa
+    aptitudes → etiquetas cortas de lo que usaste ahí
 */
 const EXPERIENCIA = [
   { fecha: "Ago 2025 – Ene 2026", corto: "Grupo UP", cargo: "Practicante Pre Profesional · Gerencia General",
     empresa: "Grupo UP · Construcción",
-    frase: "Instauré el primer control de inventario de la empresa y automaticé el registro de gastos.",
-    casos: ["kardex", "procesos"] },
+    frase: "Implementé un control de inventario en línea y automaticé el registro de gastos.",
+    aptitudes: ["Inventarios", "n8n", "Excel", "Automatización"] },
   { fecha: "Feb 2026 – Ago 2026", corto: "Caja Trujillo", cargo: "Practicante Profesional · Experiencia del Colaborador",
     empresa: "Caja Trujillo · Financiero",
-    frase: "Dos dashboards de clima en Power BI antes de Great Place to Work: 106 agencias y +2,500 colaboradores.",
-    casos: ["clima"] },
+    frase: "Construí dashboards de clima laboral en Power BI y consolidé grandes bases de datos.",
+    aptitudes: ["Power BI", "Power Query", "DAX", "Excel avanzado"] },
   { fecha: "Ago 2026 – actualidad", corto: "Grupo UP", cargo: "Soporte Financiero y de Sistemas (freelance)",
     empresa: "Grupo UP · Construcción",
-    frase: "Sistema financiero con IA y un dashboard por proyecto que presento al gerente y al socio.",
-    casos: ["gastos-obra", "tdr"] },
+    frase: "Desarrollé un sistema financiero con IA y presento a gerencia el margen e impuestos por proyecto.",
+    aptitudes: ["Finanzas", "IA vía API", "Google Sheets", "Dashboards"] },
   { fecha: "Sep 2026 – actualidad", corto: "Endore", cargo: "Administradora",
     empresa: "Centro Médico Endore · Salud",
-    frase: "Soporte directo a gerencia: indicadores de cierre, precios, conciliaciones y análisis de pacientes.",
-    casos: ["financiero-endore", "retencion", "precios", "conciliacion"] }
+    frase: "Doy soporte directo a gerencia: indicadores de cierre, precios, conciliaciones y análisis de datos.",
+    aptitudes: ["Control de gestión", "Apps Script", "Python", "Precios"] }
 ];
 
 /*
